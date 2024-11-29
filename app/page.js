@@ -51,7 +51,7 @@ export default function Home() {
 
   useEffect(() => {
     if (iframeLoaded) {
-      const timer = setTimeout(() => setIsLoading(false), 3500); // Optional delay for smoother transition
+      const timer = setTimeout(() => setIsLoading(false), 4000); // Optional delay for smoother transition
       return () => clearTimeout(timer);
     }
   }, [iframeLoaded]);
