@@ -26,7 +26,13 @@ const Phone = () => {
               </div>
             </div>
           </div>
-          <p className="text-gray font-semibold text-center mt-3">FORCE : A New Way Of Living</p>
+          <h2 className="mt-6 text-2xl font-bold text-center tracking-wide 
+        bg-white
+        text-transparent bg-clip-text 
+        transform transition-all duration-300 
+        hover:scale-105 hover:tracking-widest">
+        FORCE : A New Way Of Living
+        </h2>
         </div>
       </div>
   )
