@@ -6,17 +6,17 @@ const Phone = () => {
   return (
       <div className="screen-max-width">
         <div className="mt-10 md:mt-20 mb-14">
-          <div className="relative h-full flex-center">
-            <div className="overflow-hidden relative">
+          <div className="relative h-full flex-center w-[95%]">
+            <div className="overflow-hidden relative scale-x-[0.95] origin-right">
               <img 
                 src="./frame.png"
                 alt="frame"
                 className="bg-transparent relative z-10 w-full h-auto"
               />
               {/* Position the video inside the frame */}
-              <div className="hiw-video absolute top-[3%] bottom-[3%] left-[3%] w-[94%] h-[93%]">
+              <div className="hiw-video absolute top-[3%] bottom-[3%] left-[3%] w-[96%] h-[93%]">
                 <video 
-                  className="pointer-events-none w-full h-full object-cover rounded-3xl" 
+                  className="pointer-events-none w-full h-full object-cover rounded-[4rem]" 
                   playsInline preload="none" 
                   muted autoPlay loop
                   ref={videoRef}
