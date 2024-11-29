@@ -8,6 +8,7 @@ import TextMarquee from "@/components/TextMarquee";
 import EmailForm from "@/components/EmailForm";
 import InteractiveQuestionnaire from "@/components/Questionaire"
 import Phone from "@/components/PhoneFrame";
+import QuestionForm from "@/components/QuestionsForm";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -40,7 +41,7 @@ const forceTextVariants = {
 };
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
   const words = ["You", "Everyone", "Us"];
@@ -173,6 +174,7 @@ export default function Home() {
         </div>
       </div>
       <InteractiveQuestionnaire />
+      <QuestionForm/>
     </>
   );
 }
