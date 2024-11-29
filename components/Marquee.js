@@ -26,8 +26,8 @@ const Marquee = () => {
     const loopedImages = [...images, ...images];
 
     return (
-        <div className="w-full h-screen py-10 flex flex-col justify-center bg-gradient-to-b from-zinc-300 to-zinc-900 backdrop-blur-3xl overflow-hidden ">
-            <div className="relative w-full h-full overflow-hidden  ">
+        <div className="w-full h-screen py-10 flex flex-col justify-center bg-black-500 from-zinc-300 to-zinc-900 backdrop-blur-3xl overflow-hidden ">
+            <div className="relative w-fit h-full overflow-hidden  ">
                 <motion.div
                     className="flex gap-5"
                     initial={{ x: 0 }}
@@ -46,7 +46,7 @@ const Marquee = () => {
                             key={index}
                             src={src}
                             alt={`Marquee Image ${index + 1}`}
-                            className="bg-slate-200 rounded-[60px] flex-shrink-0 h-[90vh] w-[65vw]"
+                            className="bg-black-500 rounded-[60px] flex-shrink-0 h-[90vh] w-[55vw]"
                         />
                     ))}
                 </motion.div>
