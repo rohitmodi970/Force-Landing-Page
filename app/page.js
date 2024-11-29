@@ -41,7 +41,7 @@ const forceTextVariants = {
 };
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
   const words = ["You", "Everyone", "Us"];
