@@ -139,7 +139,7 @@ export default function Home() {
           </div>
         </div>
         <Phone/>
-        <div className="h-[50vh]">
+        <div className="h-[45vh]">
           <div className="font-bold text-6xl flex justify-center items-center">
             <h1 className="text-orange-400  w-[35vw]">Let's Know About</h1>
             <span className="text-white w-[10vw] text-center">
@@ -147,11 +147,11 @@ export default function Home() {
             </span>
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-white font-medium text-3xl tracking-tighter mt-32 hover:text-orange-400">
+            <p className="text-white font-medium text-3xl tracking-tighter mt-12 hover:text-orange-400">
               Tell us about yourself through the inventive questions we came
               up with to help your mind
             </p>
-            <h2 className="font-bold text-orange-400 text-6xl mt-3">{currentWord2}</h2>
+            <h2 className="font-bold text-orange-400 text-6xl mt-6">{currentWord2}</h2>
           </div>
         </div>
         <Marquee />
