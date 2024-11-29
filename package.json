@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.1",
     "@react-three/drei": "^9.117.3",
     "@react-three/fiber": "^8.17.10",
     "framer-motion": "^12.0.0-alpha.1",
+    "gsap": "^3.12.5",
     "mongoose": "^8.8.2",
     "motion": "^11.11.17",
     "next": "15.0.3",

@@ -7,6 +7,7 @@ import Marquee from "@/components/Marquee";
 import TextMarquee from "@/components/TextMarquee";
 import EmailForm from "@/components/EmailForm";
 import InteractiveQuestionnaire from "@/components/Questionaire"
+import Phone from "@/components/PhoneFrame";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -49,7 +50,7 @@ export default function Home() {
 
   useEffect(() => {
     if (iframeLoaded) {
-      const timer = setTimeout(() => setIsLoading(false), 3000); // Optional delay for smoother transition
+      const timer = setTimeout(() => setIsLoading(false), 3500); // Optional delay for smoother transition
       return () => clearTimeout(timer);
     }
   }, [iframeLoaded]);
@@ -69,7 +70,6 @@ export default function Home() {
           <video
             src="/loader.mp4"
             autoPlay
-            loop
             muted
             className="w-full h-full object-cover"
           ></video>
@@ -117,7 +117,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-        <div className="h-screen">
+        <div className="h-600px">
           <div className="flex flex-col justify-center items-center">
             {["journal through your", "life journey with", "FORCE"].map(
               (value, index) => (
@@ -137,8 +137,8 @@ export default function Home() {
             </button>
             <p className="text-white font-bold mt-3">It's free</p>
           </div>
-          <div className="text-8xl text-center">Laptop 3d pic</div>
         </div>
+        <Phone/>
         <div className="h-[50vh]">
           <div className="font-bold text-6xl flex justify-center items-center">
             <h1 className="text-orange-400  w-[35vw]">Let's Know About</h1>
