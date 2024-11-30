@@ -41,7 +41,7 @@ const forceTextVariants = {
 };
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
   const words = ["You", "Everyone", "Us"];
@@ -173,7 +173,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <InteractiveQuestionnaire />
+      {/* <InteractiveQuestionnaire /> */}
       <QuestionForm/>
     </>
   );

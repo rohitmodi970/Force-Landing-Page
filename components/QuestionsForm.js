@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 const QuestionForm = () => {
     const [userDetails, setUserDetails] = useState({ name: "", email: "" });
     const [currentStep, setCurrentStep] = useState(0); // 0: User Details, 1: Questions, 2: Submission
@@ -100,8 +100,8 @@ const QuestionForm = () => {
         if (currentQuestionIndex > 0) {
             setShowCard(true)
         }
-        else {
-            false
+        if( (questions.length - 1) == currentQuestionIndex) {
+            setShowCard(false)
         }
 
     }, [currentQuestionIndex])
@@ -119,46 +119,51 @@ const QuestionForm = () => {
     const buttonHover = { scale: 1.1 };
 
     return (
-        <div className="h-screen flex justify-center items-center">
+        <div className="min-h-screen bg-gradient-to-br from-orange-400 to-orange-300 flex items-center justify-center p-4 overflow-hidden relative">
 
 
-            <div className="w-full max-w-lg bg-zinc-200 rounded-2xl flex flex-col justify-center items-center shadow-lg  mx-auto p-6">
+            <div className=" flex flex-col justify-center items-center ">
                 {currentStep === 0 && (
-                    <>
-                        <h2 className="font-bold text-xl text-center mb-4">
-                            Please provide your details to begin
-                        </h2>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Enter your name"
-                            className="block w-full p-2 mb-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                            value={userDetails.name}
-                            onChange={handleUserDetailsChange}
-                        />
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Enter your email"
-                            className="block w-full p-2 mb-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                            value={userDetails.email}
-                            onChange={handleUserDetailsChange}
-                        />
-                        <button
-                            onClick={handleUserDetailsSubmit}
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                        >
-                            Start Questions
-                        </button>
-                    </>
+                    <div className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg  mx-auto p-8 opacity-90">
+                        <>
+                            <h2 className="font-bold text-xl text-center mb-4">
+                                Please provide your details to begin
+                            </h2>
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Enter your name"
+                                className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl"
+                                value={userDetails.name}
+                                onChange={handleUserDetailsChange}
+                            />
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl my-5"
+                                value={userDetails.email}
+                                onChange={handleUserDetailsChange}
+                            />
+                            <button
+                                onClick={handleUserDetailsSubmit}
+                                whilehover={{ scale: 1.05 }}
+                      whiletap={{ scale: 0.95 }}
+                      className={`w-full px-4 py-3 rounded-xl transition-all text-white bg-white/30 hover:bg-white/50
+                      }`}
+                            >
+                                Start Questions
+                            </button>
+                        </>
+                    </div>
                 )}
                 {/* previous questions */}
                 {showCard ?
 
-                    <div className=" absolute w-[30vw] left-10  ">
+                    <div className=" absolute w-[30vw] left-[18vw] text-white ">
 
                         <>
-                            <div className="bg-zinc-200 rounded-2xl p-6 mx-auto opacity-50 -z-10">
+                            <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10 ">
                                 <label
                                     htmlFor={`question-${currentQuestionIndex - 1}`}
                                     className="font-bold text-xl text-center mb-4"
@@ -168,7 +173,7 @@ const QuestionForm = () => {
                                 <textarea
                                     id={`question-${currentQuestionIndex - 1}`}
                                     rows="4"
-                                    className="block w-full p-2 mb-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 "
+                                    className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl min-h-[120px] resize-none"
                                     placeholder="Type your answer here..."
                                     value={answers[questions[currentQuestionIndex - 1]] || ""}
                                     onChange={handleInputChange}
@@ -194,48 +199,59 @@ const QuestionForm = () => {
                         animate="visible"
                         exit="exit"
                         transition={{ duration: 0.6 }}
+                        className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg mx-auto p-7 no-underline opacity-90"
                     >
-                        <label htmlFor={`question-${currentQuestionIndex}`} className="font-bold text-xl mb-4 block">
+                        <label htmlFor={`question-${currentQuestionIndex}`} className="text-2xl font-bold text-white mb-6">
                             {questions[currentQuestionIndex]}
                         </label>
                         <textarea
                             id={`question-${currentQuestionIndex}`}
                             rows="4"
-                            className="block w-full p-2 mb-4 text-sm bg-gray-50 border border-gray-300 rounded-lg"
+                            className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl min-h-[120px] resize-none border-2 border-orange-200 "
                             placeholder="Type your answer here..."
                             value={answers[questions[currentQuestionIndex]] || ""}
                             onChange={handleInputChange}
                         ></textarea>
                         <motion.button
                             onClick={handleNext}
+                            whiletap={{ scale: 0.95 }}
                             disabled={!answers[questions[currentQuestionIndex]?.trim()]}
-                            whileHover={buttonHover}
-                            className={`px-4 py-2 text-sm font-medium text-white rounded-lg ${answers[questions[currentQuestionIndex]?.trim()]
-                                ? "bg-blue-500 hover:bg-blue-600"
-                                : "bg-gray-400 cursor-not-allowed"
+                            whilehover={{ scale: 1.05 }}
+                            className={`w-full px-4 py-3 rounded-xl transition-all text-white ${answers[questions[currentQuestionIndex]?.trim()]
+                                ? "bg-white/30 hover:bg-white/50"
+                                : "bg-white/10 cursor-not-allowed"
                                 }`}
                         >
                             {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
                         </motion.button>
+                        <div className="mt-6 w-full bg-white/20 rounded-full h-2.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                                transition={{ duration: 0.5 }}
+                                className="bg-white h-2.5 rounded-full"
+                            ></motion.div>
+                        </div>
                     </motion.div>
                 )}
                 {/* next questions  */}
                 {(currentQuestionIndex <= questions.length - 2) ?
 
-                    <div className=" absolute w-[30vw] right-10  ">
+                    <div className=" absolute w-[30vw] right-[18vw]  ">
 
                         <>
-                            <div className="bg-zinc-200 rounded-2xl p-6 mx-auto opacity-50 -z-10 ">
+                            <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10 ">
+                                
                                 <label
                                     htmlFor={`question-${currentQuestionIndex + 1}`}
-                                    className="font-bold text-xl text-center mb-4"
+                                    className="font-bold text-xl text-center mb-4 text-white"
                                 >
                                     {questions[currentQuestionIndex + 1]}
                                 </label>
                                 <textarea
                                     id={`question-${currentQuestionIndex + 1}`}
                                     rows="4"
-                                    className="block w-full p-2 mb-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 "
+                                    className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl min-h-[120px] resize-none"
                                     placeholder="Type your answer here..."
                                     value={answers[questions[currentQuestionIndex + 1]] || ""}
                                     onChange={handleInputChange}
