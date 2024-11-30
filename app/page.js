@@ -58,13 +58,7 @@ export default function Home() {
     }
   }, [iframeLoaded]);
 
-  const letters = [
-    { char: "F" },
-    { char: "O" },
-    { char: "R" },
-    { char: "C" },
-    { char: "E" },
-  ];
+  
 
   return (
     <>

@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`invisible-scrollbar ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>

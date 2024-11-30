@@ -27,4 +27,7 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
-  
+  .invisible-scrollbar::-webkit-scrollbar {
+    -webkit-display: none;
+    display: none;
+  }
