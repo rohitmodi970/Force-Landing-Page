@@ -1,13 +1,9 @@
 'use client';
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion"; // Import Framer Motion
 import Navbar from "@/components/Navbar";
-import { HiArrowLongRight } from "react-icons/hi2";
 import Marquee from "@/components/Marquee";
 import TextMarquee from "@/components/TextMarquee";
 import EmailForm from "@/components/EmailForm";
-import InteractiveQuestionnaire from "@/components/Questionaire"
-import Phone from "@/components/PhoneFrame";
 import QuestionForm from "@/components/QuestionsForm";
 import HeroSection from "@/components/HeroSection";
 import MainContent from "@/components/MainContent";

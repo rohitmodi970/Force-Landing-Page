@@ -61,10 +61,10 @@ const WaitlistForm = () => {
   };
 
   return (
-    <div className="min-h-[80vh] w-[35vw] bg-[#DDE5FE] flex justify-center items-center rounded-3xl fixed right-10 top-24 z-30 p-6 shadow-lg">
+    <div className="min-h-[80vh] w-[35vw] bg-[#f09824] flex justify-center items-center rounded-3xl fixed right-10 top-24 z-50 p-6 shadow-lg">
       <div className="flex flex-col items-center">
-        <h2 className="text-4xl font-extrabold text-blue-600 mb-4">Get Early Access</h2>
-        <p className="text-center text-gray-700 text-sm mb-6">
+        <h2 className="text-4xl font-extrabold text-orange-600 mb-4">Get Early Access</h2>
+        <p className="text-center text-gray-700 text-base mb-6 hover:text-orange-900">
           Join the waitlist for early access to Force. We’ll reach out to you as more spots become available.
         </p>
         <form className="w-full" onSubmit={handleSubmit}>
@@ -74,7 +74,7 @@ const WaitlistForm = () => {
               id="name"
               value={formData.name}
               onChange={handleChange}
-              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
               placeholder="Your Name*"
             />
             <input
@@ -82,7 +82,7 @@ const WaitlistForm = () => {
               id="email"
               value={formData.email}
               onChange={handleChange}
-              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
               placeholder="Email Address*"
             />
             <input
@@ -90,7 +90,7 @@ const WaitlistForm = () => {
               id="poc"
               value={formData.poc}
               onChange={handleChange}
-              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
               placeholder="How did you hear about us?"
             />
           </div>
@@ -99,7 +99,7 @@ const WaitlistForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 z-30${
+            className={`w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 z-30${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

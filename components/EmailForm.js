@@ -49,14 +49,14 @@ const EmailForm = () => {
             <input
                 type="email"
                 id="email-address-icon"
-                className="bg-gray-50 border  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 py-4  dark:bg-gray-100 dark:border-gray-100 dark:placeholder-gray-400 dark:text-blue-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 border  text-white text-base rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full ps-10 p-2.5 py-4  dark:bg-gray-100 dark:border-gray-100 dark:placeholder-gray-400 dark:text-zinc-700 font-bold  dark:focus:ring-orange-500 dark:focus:border-orange-500"
                 placeholder="name@force.com"
                 value={email}
                 onChange={handleInputChange}
             />
             <button
                 type="button"
-                 className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium  rounded-lg text-sm px-5 py-4 text-center text-nowrap"
+                 className="text-white bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-medium  rounded-lg text-base px-5 py-4 text-center text-nowrap"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
             >
