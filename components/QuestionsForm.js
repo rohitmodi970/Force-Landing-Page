@@ -124,14 +124,15 @@ const QuestionForm = () => {
             setShowCard(true)
 
         }
-        if ((questions.length - 1) == currentQuestionIndex) {
-            setShowCard(false)
-        }
+        // if (((questions.length ) == currentQuestionIndex)) {
+        //     setShowCard(false)
+        // }
         if (currentStep === 1) {
             setShowCardNext(true);
         }
         if ((currentStep === 2) && ((questions.length - 1) === currentQuestionIndex)) {
             setShowCardNext(false);
+            setShowCard(false)
         }
     }, [currentQuestionIndex, currentStep])
 
