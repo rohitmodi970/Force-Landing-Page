@@ -119,7 +119,7 @@ const QuestionForm = () => {
     const buttonHover = { scale: 1.1 };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-400 to-orange-300 flex items-center justify-center p-4 overflow-hidden relative">
+        <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative">
 
 
             <div className=" flex flex-col justify-center items-center ">

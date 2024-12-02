@@ -55,8 +55,6 @@ export default function Home() {
     }
   }, [iframeLoaded]);
 
-  
-
   return (
     <>
       {isLoading && (
@@ -71,11 +69,35 @@ export default function Home() {
       )}
       <div className="bg-black min-h-screen max-w-screen">
         <Navbar />
-        <HeroSection/>
-        
-        
-        <MainContent/>
+        <HeroSection />
+
+        <MainContent />
+        <div className="h-[45vh]">
+          <div className="font-bold text-6xl flex justify-center items-center">
+            <h1 className="text-orange-400 w-[35vw]">Let's Know About</h1>
+            <span className="text-white w-[10vw] text-center">
+              {currentWord}.
+            </span>
+          </div>
+          <div className="flex flex-col justify-center items-center">
+            <p className="text-white font-medium text-3xl tracking-tighter mt-12 hover:text-orange-400">
+              Tell us about yourself through the inventive questions we came
+              up with to help your mind
+            </p>
+            <h2 className="font-bold text-orange-400 text-6xl mt-6">{currentWord2}</h2>
+          </div>
+        </div>
         <Marquee />
+        <div className="relative">
+        <div className="absolute top-0 left-0 w-full h-full z-0">
+          {/* ModelViewer in the background */}
+          <ModelViewer modelPath="/Termanation1.glb" />
+        </div>
+        <div className="relative z-10">
+          {/* QuestionForm on top */}
+          <QuestionForm />
+        </div>
+      </div>
         <div className="h-screen bg-gradient-to-b from-black to-orange-400 flex flex-col justify-center">
           <h1 className="text-5xl semibold text-white text-center hover:text-orange-400">
             Try FORCE Today !!!
@@ -93,9 +115,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* <InteractiveQuestionnaire /> */}
-      <QuestionForm/>
-      <ModelViewer modelPath="/Termanation1.glb" />
+
+      
     </>
   );
 }
+
