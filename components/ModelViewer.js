@@ -24,17 +24,33 @@ const ModelViewer = ({ modelPath }) => {
     containerRef.current.appendChild(renderer.domElement);
 
     // Add lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-    directionalLight.position.set(5, 10, 7.5);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.1);
+    directionalLight.position.set(4, 8, 7.5);
     scene.add(directionalLight);
+    // Add spotlight for the emission effect from the planet
+    const pointLight = new THREE.PointLight(0xff0000, 2, 250); // Red light
+    pointLight.position.set(0, 2, 0);
+    scene.add(pointLight);
 
-    // Initialize a variable to store the loaded model
-    let model = null;
+    // Add star-like particles around the planet
+    const particleGeometry = new THREE.BufferGeometry();
+    const particleCount = 1000;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      positions[i * 3] = Math.random() * 50 - 25;
+      positions[i * 3 + 1] = Math.random() * 50 - 25;
+      positions[i * 3 + 2] = Math.random() * 50 - 25;
+    }
+    particleGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
 
     // Load the 3D model
+    let model = null;
     const loader = new GLTFLoader();
     loader.load(
       modelPath,
@@ -58,9 +74,22 @@ const ModelViewer = ({ modelPath }) => {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Apply rotation to the model if it's loaded
+      // Apply rotation to the model
       if (model) {
         model.rotation.y -= 0.005; // Adjust rotation speed as needed
+      }
+
+      // Pulse effect for the planet's light
+      pointLight.intensity = 2 + Math.sin(Date.now() * 0.005) * 1.5; // Pulsing light intensity
+
+      // Update particle movement
+      particles.rotation.x += 0.001; // Rotate particles slowly
+      particles.rotation.y += 0.001;
+
+      // Animate the scale of the planet to create a pulsing effect
+      if (model) {
+        const scale = 2.5 + Math.sin(Date.now() * 0.002) * 0.2; // Pulsing scale effect
+        model.scale.set(scale, scale, scale);
       }
 
       controls.update();
