@@ -7,6 +7,8 @@ const QuestionForm = () => {
     const [answers, setAnswers] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showCard, setShowCard] = useState(false)
+    const [showCardNext, setShowCardNext] = useState(false)
+    const [handleButton, sethandleButton] = useState(true)
 
     const questions = [
         "Write down the top 5 feelings you have while you are with your closest friend?",
@@ -86,7 +88,27 @@ const QuestionForm = () => {
             setIsSubmitting(false);
         }
     };
+    
+    const fonts = [
+        "'Lobster', cursive",
+        "'Poppins', sans-serif",
+        "'Roboto Slab', serif",
+        "'Montserrat', sans-serif",
+        "'Dancing Script', cursive",
+        "'Oswald', sans-serif",
+        "'Playfair Display', serif",
+        "'Raleway', sans-serif",
+        "'Bebas Neue', sans-serif",
+        "'Roboto Mono', monospace",
+      ];
+      const [randomFont, setRandomFont] = useState("");
 
+      useEffect(() => {
+        // Select a random font from the list on every refresh
+        const randomIndex = Math.floor(Math.random() * fonts.length);
+        setRandomFont(fonts[randomIndex]);
+      }, []); // Empty dependency array ensures it runs only on mount
+    
 
     const handleRestart = () => {
         setUserDetails({ name: "", email: "" });
@@ -95,16 +117,24 @@ const QuestionForm = () => {
         setCurrentQuestionIndex(0);
         setIsSubmitting(false);
     };
+    console.log('\ncurrent Question Index: ', currentQuestionIndex)
     useEffect(() => {
-
-        if (currentQuestionIndex > 0) {
+        if ((currentQuestionIndex) > 0) {
+            // console.log('\ncurrent Question Index: ',currentQuestionIndex)
             setShowCard(true)
+
         }
-        if( (questions.length - 1) == currentQuestionIndex) {
+        if ((questions.length - 1) == currentQuestionIndex) {
             setShowCard(false)
         }
+        if (currentStep === 1) {
+            setShowCardNext(true);
+        }
+        if ((currentStep === 2) && ((questions.length - 1) === currentQuestionIndex)) {
+            setShowCardNext(false);
+        }
+    }, [currentQuestionIndex, currentStep])
 
-    }, [currentQuestionIndex])
     const fadeIn = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 },
@@ -123,7 +153,10 @@ const QuestionForm = () => {
 
 
             <div className=" flex flex-col justify-center items-center ">
-                {currentStep === 0 && (
+                {handleButton ? <button onClick={() => sethandleButton(false)} className="px-12 py-5 rounded-full bg-orange-400 text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-orange-400 hover:scale-125 z-10 transition-transform duration-1000">
+                    Answer & Discover
+                </button> : ''}
+                {!handleButton && (currentStep === 0) && (
                     <div className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg  mx-auto p-8 opacity-90">
                         <>
                             <h2 className="font-bold text-xl text-center mb-4">
@@ -148,8 +181,8 @@ const QuestionForm = () => {
                             <button
                                 onClick={handleUserDetailsSubmit}
                                 whilehover={{ scale: 1.05 }}
-                      whiletap={{ scale: 0.95 }}
-                      className={`w-full px-4 py-3 rounded-xl transition-all text-white bg-white/30 hover:bg-white/50
+                                whiletap={{ scale: 0.95 }}
+                                className={`w-full px-4 py-3 rounded-xl transition-all text-white bg-white/30 hover:bg-white/50
                       }`}
                             >
                                 Start Questions
@@ -192,7 +225,9 @@ const QuestionForm = () => {
                     : ''}
 
                 {currentStep === 1 && (
+
                     <motion.div
+                    
                         key={currentQuestionIndex}
                         variants={cardTransition}
                         initial="hidden"
@@ -201,7 +236,7 @@ const QuestionForm = () => {
                         transition={{ duration: 0.6 }}
                         className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg mx-auto p-7 no-underline opacity-90"
                     >
-                        <label htmlFor={`question-${currentQuestionIndex}`} className="text-2xl font-bold text-white mb-6">
+                        <label htmlFor={`question-${currentQuestionIndex}`} className="text-2xl font-bold text-white mb-6" style={{ fontFamily: randomFont }}>
                             {questions[currentQuestionIndex]}
                         </label>
                         <textarea
@@ -235,13 +270,13 @@ const QuestionForm = () => {
                     </motion.div>
                 )}
                 {/* next questions  */}
-                {(currentQuestionIndex <= questions.length - 2) ?
+                {(showCardNext && (currentQuestionIndex <= questions.length - 1)) ?
 
                     <div className=" absolute w-[30vw] right-[18vw]  ">
 
                         <>
                             <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10 ">
-                                
+
                                 <label
                                     htmlFor={`question-${currentQuestionIndex + 1}`}
                                     className="font-bold text-xl text-center mb-4 text-white"
@@ -272,30 +307,42 @@ const QuestionForm = () => {
 
 
                 {currentStep === 2 && (
-                    <>
-                        <h2 className="font-bold text-xl text-center mb-4">
-                            Thank you, {userDetails.name}!
-                        </h2>
-                        <p className="text-gray-700 text-center mb-4">
-                            Your responses have been recorded. We will reach out to you at{" "}
-                            <strong>{userDetails.email}</strong>.
-                        </p>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={isSubmitting}
-                            className={`px-4 py-2 text-sm font-medium text-white rounded-lg ${isSubmitting
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-green-500 hover:bg-green-600"
-                                }`}
+                    <> <div className="flex flex-col items-center justify-center  bg-transparent text-gray-200 p-6">
+                        <motion.div
+                            className="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-md text-center"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
                         >
-                            {isSubmitting ? "Submitting..." : "Submit"}
-                        </button>
-                        <button
-                            onClick={handleRestart}
-                            className="mt-2 px-4 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg hover:bg-gray-600"
-                        >
-                            Restart
-                        </button>
+                            <h2 className="font-bold text-2xl text-gray-100 mb-4">
+                                Thank you, {userDetails.name}!
+                            </h2>
+                            <p className="text-gray-400 mb-6">
+                                Your responses have been recorded. We will reach out to you at{" "}
+                                <strong className="text-gray-200">{userDetails.email}</strong>.
+                            </p>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleSubmit}
+                                disabled={isSubmitting}
+                                className={`px-6 py-3 w-full text-sm font-medium text-gray-900 rounded-lg transition-colors ${isSubmitting
+                                        ? "bg-gray-600 cursor-not-allowed"
+                                        : "bg-green-500 hover:bg-green-600"
+                                    }`}
+                            >
+                                {isSubmitting ? "Submitting..." : "Submit"}
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleRestart}
+                                className="mt-4 px-6 py-3 w-full text-sm font-medium text-gray-900 bg-gray-400 rounded-lg hover:bg-gray-500 transition-colors"
+                            >
+                                Restart
+                            </motion.button>
+                        </motion.div>
+                    </div>
                     </>
                 )}
             </div>

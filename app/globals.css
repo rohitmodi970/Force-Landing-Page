@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 
+
 .loader {
     position: fixed;
     top: 0;
