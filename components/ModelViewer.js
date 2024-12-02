@@ -27,7 +27,7 @@ const ModelViewer = ({ modelPath }) => {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
     directionalLight.position.set(5, 10, 7.5);
     scene.add(directionalLight);
 
@@ -41,7 +41,7 @@ const ModelViewer = ({ modelPath }) => {
       (gltf) => {
         model = gltf.scene;
         scene.add(model);
-        model.scale.set(2.5, 2.5, 2.5); // Adjust scale if needed
+        model.scale.set(3, 3, 3); // Adjust scale if needed
       },
       undefined,
       (error) => {
@@ -51,7 +51,7 @@ const ModelViewer = ({ modelPath }) => {
 
     // Add orbit controls for interaction
     const controls = new OrbitControls(camera, renderer.domElement);
-    camera.position.set(0, 2, 5);
+    camera.position.set(0, 0, 5);
     controls.update();
 
     // Animation loop
@@ -75,7 +75,7 @@ const ModelViewer = ({ modelPath }) => {
     };
   }, [modelPath]);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "500px" }} />;
+  return <div ref={containerRef} style={{ width: "100%", height: "750px" }} />;
 };
 
 export default ModelViewer;
