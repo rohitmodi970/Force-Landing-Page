@@ -1,42 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Planet = () => {
-  const planetRef = useRef(null);
-  const [rotation, setRotation] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRotation(prev => prev + 2);
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <motion.div 
-      ref={planetRef}
-      animate={{ rotate: rotation }}
-      transition={{ duration: 5, ease: 'linear' }}
-      className="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                 w-[400px] h-[400px] bg-orange-400 rounded-full opacity-20 
-                 shadow-2xl border-8 border-blue-700/30"
-    >
-      {[1, 2, 3].map((ring) => (
-        <div 
-          key={ring} 
-          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                      rounded-full border border-orange-300/10`}
-          style={{
-            width: `${ring * 100}px`, 
-            height: `${ring * 100}px`
-          }}
-        />
-      ))}
-    </motion.div>
-  );
-};
-
 const InteractiveQuestionnaire = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -136,9 +100,8 @@ const InteractiveQuestionnaire = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-400 to-orange-300 flex items-center justify-center p-4 overflow-hidden relative">
-      <Planet />
-      <div className="relative w-full max-w-xl h-[600px]">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative">
+      <div className="relative w-full bg-transparent max-w-xl h-[600px]">
         <AnimatePresence mode="popLayout">
           {!isComplete && questions.map((question, index) => {
             if (Math.abs(index - currentQuestion) > 1) return null;
