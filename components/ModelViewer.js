@@ -41,7 +41,7 @@ const ModelViewer = ({ modelPath }) => {
       (gltf) => {
         model = gltf.scene;
         scene.add(model);
-        model.scale.set(3, 3, 3); // Adjust scale if needed
+        model.scale.set(2.5, 2.5, 2.5); // Adjust scale if needed
       },
       undefined,
       (error) => {
