@@ -91,7 +91,7 @@ export default function Home() {
         <div className="relative">
         <div className="absolute top-0 left-0 w-full h-full z-0">
           {/* ModelViewer in the background */}
-          <ModelViewer modelPath="/Termanation1.glb" />
+          <ModelViewer modelPath="/Termanation2.glb" />
         </div>
         <div className="relative z-10">
           {/* QuestionForm on top */}
