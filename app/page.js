@@ -91,9 +91,9 @@ export default function Home() {
       <div className="bg-black min-h-screen max-w-screen">
         <Navbar />
         <HeroSection />
-        <div className="h-[55vh]">
+        <div className="h-[55vh] relative">
              <motion.div
-        className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-6xl leading-[64px] cursor-default absolute"
+        className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute bottom-10 text-center"
         animate={{
           WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,
           WebkitMaskSize:`${size}px`
@@ -101,12 +101,22 @@ export default function Home() {
         transition={{
           type:"tween" , ease:"backOut"
         }}
+        style={{
+          maskImage: 'url(/pics/mask.svg)',
+          backgroundColor: '#1C1C1C',
+          maskRepeat: 'no-repeat',
+          color: 'orange',
+          maskSize: '40px'
+        }}
       >
         <p onMouseEnter={()=>{setIsHovered(true)}} onMouseLeave={()=>{setIsHovered(false)}}
+        style={{
+          
+          color: 'var(--chakra-connection);'
+        }}
           className=''
           >
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Delectus, maiores aliquam! Et id deserunt illo dolores porro
-          nesciunt corrupti placeat rem omnis quo libero voluptas nulla mollitia excepturi, saepe aperiam.
+          Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
         </p>
       </motion.div>
           <div className="font-bold text-6xl flex justify-center items-center">
