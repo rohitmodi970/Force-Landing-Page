@@ -67,10 +67,10 @@ const HorizontalScrollCarousel = () => {
     target: targetRef,
   });
 
-  const words = ["You", "Everyone", "Us"];
-  const words2 = ["All these", "Questions.", "Explore"];
-  const currentWord = useWordCycle(words, 2000);
-  const currentWord2 = useWordCycle(words2, 2000);
+  const words = ["You", "Us" ,"Everyone"];
+  const words2 = ["Welcome", "To the future of human potential.", " Welcome to FORCE."];
+  const currentWord = useWordCycle(words, 1000);
+  const currentWord2 = useWordCycle(words2, 1000);
 
   const x = useTransform(scrollYProgress, [0, 1], ["1%", "-75%"]);
 
@@ -80,15 +80,14 @@ const HorizontalScrollCarousel = () => {
         {/* Text Container */}
         <div className="absolute z-30 text-center">
           <div className="font-bold text-6xl flex justify-center items-center">
-            <h1 className="text-orange-400  w-[35vw]">Let's Know About</h1>
+            <h1 className="text-orange-400  w-[30vw]">Our Promise To </h1>
             <span className="text-white w-[10vw] text-center">
               {currentWord}.
             </span>
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-white font-medium text-3xl tracking-tighter mt-12 hover:text-orange-400">
-              Tell us about yourself through the inventive questions we came
-              up with to help your mind
+            <p className="text-white font-medium text-3xl w-[80%] tracking-tighter mt-12 hover:text-orange-400">
+            We hold space for your journey. We honor your unique path. We evolve with your trust. We protect your truth. We amplify your force.
             </p>
             <h2 className="font-bold text-orange-400 text-6xl mt-6">
               {currentWord2}
