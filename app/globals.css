@@ -2,36 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-
+:root {
+  --chakra-foundation: #E53E3E;
+  --chakra-creativity: #ED8936;
+  --chakra-empowerment: #ECC94B;
+  --chakra-connection: #48BB78;
+  --chakra-communication: #4299E1;
+  --chakra-insight: #667EEA;
+  --chakra-transcendence: #9F7AEA;
+  --purple-500: #9F7AEA;
+}
 
 .loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-  
-  .app-content {
-    visibility: visible;
-  }
-  
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
-  
-  .rotate-y-180 {
-    transform: rotateY(180deg);
-  }
-  .invisible-scrollbar::-webkit-scrollbar {
-    -webkit-display: none;
-    display: none;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.app-content {
+  visibility: visible;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.invisible-scrollbar::-webkit-scrollbar {
+  -webkit-display: none;
+  display: none;
+}
+
+/* Additional Chakra color classes */
+.bg-chakra-foundation { background-color: var(--chakra-foundation); }
+.bg-chakra-creativity { background-color: var(--chakra-creativity); }
+.bg-chakra-empowerment { background-color: var(--chakra-empowerment); }
+.bg-chakra-connection { background-color: var(--chakra-connection); }
+.bg-chakra-communication { background-color: var(--chakra-communication); }
+.bg-chakra-insight { background-color: var(--chakra-insight); }
+.bg-chakra-transcendence { background-color: var(--chakra-transcendence); }
+
+.text-chakra-foundation { color: var(--chakra-foundation); }
+.text-chakra-creativity { color: var(--chakra-creativity); }
+.text-chakra-empowerment { color: var(--chakra-empowerment); }
+.text-chakra-connection { color: var(--chakra-connection); }
+.text-chakra-communication { color: var(--chakra-communication); }
+.text-chakra-insight { color: var(--chakra-insight); }
+.text-chakra-transcendence { color: var(--chakra-transcendence); }
   .mask{
     mask-image: url('/pics/mask.svg');
     background-color: white;
