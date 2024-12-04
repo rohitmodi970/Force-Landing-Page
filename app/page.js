@@ -134,7 +134,7 @@ export default function Home() {
           <QuestionForm />
         </div>
       </div>
-        <div className="h-screen bg-gradient-to-b from-black to-orange-400 flex flex-col justify-center">
+        <div className="h-screen bg-gradient-to-b from-black to-purple-500 flex flex-col justify-center">
           <h1 className="text-5xl semibold text-white text-center hover:text-orange-400">
             Try FORCE Today !!!
           </h1>
