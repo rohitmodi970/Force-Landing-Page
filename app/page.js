@@ -10,6 +10,8 @@ import MainContent from "@/components/MainContent";
 import ModelViewer from "@/components/ModelViewer";
 import SpinalCordChakra from "@/components/Chakra";
 import CursorEffect from "@/components/CursorEffect";
+import { motion, AnimatePresence } from 'framer-motion';
+
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -56,7 +58,24 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [iframeLoaded]);
+//   // Hook to track mouse position
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false)
 
+  useEffect(() => {
+    const updateMousePosition = (event) => {
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    };
+
+    window.addEventListener('mousemove', updateMousePosition);
+
+    return () => {
+      window.removeEventListener('mousemove', updateMousePosition);
+    };
+  }, []);
+
+  const { x, y } = mousePosition;
+  const size = isHovered ? 400 : 40
   return (
     <>
       {isLoading && (
@@ -73,6 +92,23 @@ export default function Home() {
         <Navbar />
         <HeroSection />
         <div className="h-[55vh]">
+             <motion.div
+        className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-6xl leading-[64px] cursor-default absolute"
+        animate={{
+          WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,
+          WebkitMaskSize:`${size}px`
+        }}
+        transition={{
+          type:"tween" , ease:"backOut"
+        }}
+      >
+        <p onMouseEnter={()=>{setIsHovered(true)}} onMouseLeave={()=>{setIsHovered(false)}}
+          className=''
+          >
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Delectus, maiores aliquam! Et id deserunt illo dolores porro
+          nesciunt corrupti placeat rem omnis quo libero voluptas nulla mollitia excepturi, saepe aperiam.
+        </p>
+      </motion.div>
           <div className="font-bold text-6xl flex justify-center items-center">
             <h1 className="text-orange-400 w-[35vw]">   What is FORCE ?</h1>
           </div>
