@@ -184,14 +184,24 @@ const SpinalCordChakra = () => {
               }}
               whileHover={{ 
                 scale: 1.05,
-                rotateY: index % 2 === 0 ? -5 : 5
+                rotateY: index % 2 === 0 ? -5 : 5,
+                transition: { 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 15 
+                }
+              }}
+              transition={{
+                type: "spring", 
+                stiffness: 300, 
+                damping: 15
               }}
             >
               <div className={`flex items-center ${index % 2 === 0 ? 'flex-row-reverse' : ''}`}>
                 <div className="text-5xl">{chakra.icon}</div>
-                <div className={`flex-grow ${index % 2 === 0 ? 'text-right mr-0' : 'text-left ml-4'}`}>
+                <div className={`flex-grow ${index % 2 === 0 ? 'text-right ml-16' : 'text-left ml-4'}`}>
                   <h3 
-                    className="text-2xl font-bold mb-2"
+                    className="text-2xl font-bold mb-2 mr-4"
                     style={{ color: chakra.color }}
                   >
                     {chakra.title}

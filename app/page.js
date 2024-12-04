@@ -73,14 +73,14 @@ export default function Home() {
         <HeroSection />
         <div className="h-[55vh]">
           <div className="font-bold text-6xl flex justify-center items-center">
-            <h1 className="text-orange-400 w-[35vw]">   What is FORCE ?</h1>
+            <h1 className="text-chakra-creativity w-[35vw]">   What is FORCE ?</h1>
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-white font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-orange-400">
+            <p className="text-white font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-chakra-creativity">
             Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
             </p>
           </div>
-          <p className="text-orange-400 font-medium text-5xl justify-center text-center w-[100%] tracking-tighter mt-10 hover:text-white">
+          <p className="text-chakra-creativity font-medium text-5xl justify-center text-center w-[100%] tracking-tighter mt-10 hover:text-white">
            Discover your direction in Life with the help of FORCE
             </p>
         </div>
@@ -97,11 +97,11 @@ export default function Home() {
           <QuestionForm />
         </div>
       </div>
-        <div className="h-screen bg-gradient-to-b from-black to-orange-400 flex flex-col justify-center">
-          <h1 className="text-5xl semibold text-white text-center hover:text-orange-400">
+        <div className="h-screen bg-gradient-to-b from-black to-purple-500 flex flex-col justify-center">
+          <h1 className="text-5xl semibold text-white text-center hover:text-purple-500 mt-16">
             Try FORCE Today !!!
           </h1>
-          <div className="mt-60">
+          <div className="mt-40">
             <TextMarquee />
           </div>
           <div className="notified mt-20">

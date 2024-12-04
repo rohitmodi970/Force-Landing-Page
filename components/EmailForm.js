@@ -56,7 +56,7 @@ const EmailForm = () => {
             />
             <button
                 type="button"
-                 className="text-white bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-medium  rounded-lg text-base px-5 py-4 text-center text-nowrap"
+                 className="text-white bg-gradient-to-r from-purple-700 via-purple-500 to-purple-800 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-medium  rounded-lg text-base px-5 py-4 text-center text-nowrap"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
             >
