@@ -8,7 +8,7 @@ import QuestionForm from "@/components/QuestionsForm";
 import HeroSection from "@/components/HeroSection";
 import MainContent from "@/components/MainContent";
 import ModelViewer from "@/components/ModelViewer";
-import CursorEffect from "@/components/CursorEffect";
+import SpinalCordChakra from "@/components/Chakra";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -71,23 +71,21 @@ export default function Home() {
       <div className="bg-black min-h-screen max-w-screen">
         <Navbar />
         <HeroSection />
-
-        <MainContent />
-        <div className="h-[45vh]">
+        <div className="h-[55vh]">
           <div className="font-bold text-6xl flex justify-center items-center">
-            <h1 className="text-orange-400 w-[35vw]">Let's Know About</h1>
-            <span className="text-white w-[10vw] text-center">
-              {currentWord}.
-            </span>
+            <h1 className="text-orange-400 w-[35vw]">   What is FORCE ?</h1>
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-white font-medium text-3xl tracking-tighter mt-12 hover:text-orange-400">
-              Tell us about yourself through the inventive questions we came
-              up with to help your mind
+            <p className="text-white font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-orange-400">
+            Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
             </p>
-            <h2 className="font-bold text-orange-400 text-6xl mt-6">{currentWord2}</h2>
           </div>
+          <p className="text-orange-400 font-medium text-5xl justify-center text-center w-[100%] tracking-tighter mt-10 hover:text-white">
+           Discover your direction in Life with the help of FORCE
+            </p>
         </div>
+        <SpinalCordChakra/>
+        <MainContent />
         <Marquee />
         <div className="relative">
         <div className="absolute top-0 left-0 w-full h-full z-0">
@@ -117,8 +115,6 @@ export default function Home() {
         </div>
                 <CursorEffect />
       </div>
-
-      
     </>
   );
 }
