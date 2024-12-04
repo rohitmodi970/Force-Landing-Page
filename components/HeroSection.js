@@ -84,10 +84,10 @@ const forceTextVariants = {
                 </motion.div>
               ))}
             </div>
-            <p className="font-semibold translate-x-1/4 text-right text-3xl text-wrap text-white mt-4">
-              We Listen To You Like A Friend Does
+            <p className="font-semibold translate-x-1/5 text-center text-2xl text-wrap text-white mt-4">
+            Discover your Force: Where human potential meets AI-powered evolution
             </p>
-            <button className="absolute right-[50%] px-9 py-2 rounded-full bg-orange-400 text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
+            <button className="absolute right-[20%] px-9 py-2 rounded-full bg-orange-400 text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
               <span>Get Started</span>
               <HiArrowLongRight />
             </button>
