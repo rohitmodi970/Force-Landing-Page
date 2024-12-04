@@ -90,13 +90,13 @@ const SpinalCordChakra = () => {
         background: `
       radial-gradient(
         ellipse at center, 
-        rgba(23, 25, 35, 0.9) 0%, 
-        rgba(15, 15, 25, 0.95) 100%
+        rgba(0, 0, 0, 0.9) 0%, 
+        rgba(0, 0, 0, 0.95) 100%
       ),
       linear-gradient(
         135deg, 
-        rgba(73, 63, 117, 0.1) 0%, 
-        rgba(40, 40, 60, 0.2) 100%
+        rgba(0, 0, 0, 0.1) 0%, 
+        rgba(0, 0, 0, 0.2) 100%
       ),
       url('spine.png')
     `,
