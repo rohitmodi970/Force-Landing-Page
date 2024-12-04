@@ -154,7 +154,7 @@ const QuestionForm = () => {
 
 
             <div className=" flex flex-col justify-center items-center ">
-                {handleButton ? <button onClick={() => sethandleButton(false)} className="px-12 py-5 rounded-full bg-orange-400 text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-orange-400 hover:scale-125 z-10 transition-transform duration-1000">
+                {handleButton ? <button onClick={() => sethandleButton(false)} className="px-12 py-5 rounded-full bg-chakra-insight text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-orange-400 hover:scale-125 z-10 transition-transform duration-1000">
                     Answer & Discover
                 </button> : ''}
                 {!handleButton && (currentStep === 0) && (

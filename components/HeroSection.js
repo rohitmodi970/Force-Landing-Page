@@ -71,7 +71,7 @@ const forceTextVariants = {
               {letters.map((letter, index) => (
                 <motion.div
                   key={index}
-                  className="text-9xl font-extrabold text-orange-400"
+                  className="text-9xl font-extrabold text-chakra-foundation"
                   initial="initial"
                   animate="animate"
                   variants={forceTextVariants}
@@ -87,7 +87,7 @@ const forceTextVariants = {
             <p className="font-semibold translate-x-1/5 text-center text-2xl text-wrap text-white mt-4">
             Discover your Force: Where human potential meets AI-powered evolution
             </p>
-            <button className="absolute right-[20%] px-9 py-2 rounded-full bg-orange-400 text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
+            <button className="absolute right-[20%] px-9 py-2 rounded-full bg-chakra-foundation text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
               <span>Get Started</span>
               <HiArrowLongRight />
             </button>
