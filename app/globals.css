@@ -34,9 +34,9 @@
   }
   .mask{
     mask-image: url('/pics/mask.svg');
-    background-color: red;
+    background-color: white;
     mask-repeat: no-repeat;
-    color: white;
+    color: orange;
     mask-size: 40px;
     
   }

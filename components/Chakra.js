@@ -85,7 +85,7 @@ const SpinalCordChakra = () => {
 
   return (
     <div 
-      className="min-h-screen h-[150vh] flex items-center justify-center p-8 overflow-hidden relative"
+      className="min-h-screen h-[150vh] flex items-center justify-center p-8 overflow-hidden relative "
       style={{
         background: `
       radial-gradient(
