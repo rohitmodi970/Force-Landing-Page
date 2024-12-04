@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaHome, 
@@ -82,7 +83,24 @@ const SpinalCordChakra = () => {
       }
     })
   };
+//   // Hook to track mouse position
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false)
 
+  useEffect(() => {
+    const updateMousePosition = (event) => {
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    };
+
+    window.addEventListener('mousemove', updateMousePosition);
+
+    return () => {
+      window.removeEventListener('mousemove', updateMousePosition);
+    };
+  }, []);
+
+  const { x, y } = mousePosition;
+  const size = isHovered ? 400 : 40
   return (
     <div 
       className="min-h-screen h-[150vh] flex items-center justify-center p-8 overflow-hidden relative "
@@ -107,8 +125,29 @@ const SpinalCordChakra = () => {
     position: 'relative'
   }}
     >
+      {/* Custom Cursor */}
+            <motion.div
+        className=" h-[100%] w-[100%] flex items-center justify-center text-orange-400  cursor-default absolute"
+        animate={{
+          WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,
+          WebkitMaskSize:`${size}px`
+        }}
+        transition={{
+          type:"tween" , ease:"backOut"
+        }}
+        style={{
+          maskImage: 'url(/pics/connection.png)',
+          backgroundColor: 'white',
+          maskRepeat: 'no-repeat',
+          color: 'orange',
+          maskSize: '40px'
+        }}
+      >
+        
+      </motion.div>
       {/* Spinal Cord Structure */}
       <motion.div 
+      // onMouseEnter={()=>{setIsHovered(true)}} onMouseLeave={()=>{setIsHovered(false)}}
         initial={{ opacity: 0, scaleY: 0 }}
         animate={{ opacity: 1, scaleY: 1 }}
         transition={{ duration: 1 }}
