@@ -32,3 +32,30 @@
     -webkit-display: none;
     display: none;
   }
+  .mask{
+    mask-image: url('/pics/mask.svg');
+    background-color: red;
+    mask-repeat: no-repeat;
+    color: white;
+    mask-size: 40px;
+    
+  }
+  @keyframes light-beam {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  
+  .animate-light-beam {
+    animation: light-beam 2s infinite;
+  }
+  

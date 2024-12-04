@@ -8,6 +8,7 @@ import QuestionForm from "@/components/QuestionsForm";
 import HeroSection from "@/components/HeroSection";
 import MainContent from "@/components/MainContent";
 import ModelViewer from "@/components/ModelViewer";
+import CursorEffect from "@/components/CursorEffect";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -114,6 +115,7 @@ export default function Home() {
             </form>
           </div>
         </div>
+                <CursorEffect />
       </div>
 
       

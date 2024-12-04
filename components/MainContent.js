@@ -1,5 +1,6 @@
 import React from 'react'
 import Phone from './PhoneFrame'
+import CursorEffect from './CursorEffect'
 const MainContent = () => {
   return (
     <>
@@ -25,6 +26,7 @@ const MainContent = () => {
           </div>
         </div>
         <Phone/>
+        {/* <CursorEffect/> */}
     </>
   )
 }
