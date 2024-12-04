@@ -52,7 +52,7 @@ const CursorEffect = () => {
 
   return (
     <div className="main h-[100vh] bg-black flex flex-col items-center justify-center">
-      <motion.div className="first mask h-[100%] w-[100%] flex items-center justify-center bg-white overflow-hidden cursor-default absolute"
+      <motion.div className="first mask h-[100%] w-[100%] flex items-center justify-center bg-white overflow-hidden cursor-none absolute"
       
               animate={{
           WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,

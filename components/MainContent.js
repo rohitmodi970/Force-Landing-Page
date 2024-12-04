@@ -29,9 +29,9 @@ const MainContent = () => {
 
   return (
     <>
-    <div className="h-[100vh]">
+    <div className="h-[100vh] cursor-none">
     <motion.div
-        className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-6xl leading-[64px] cursor-default absolute"
+        className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-6xl leading-[64px]  absolute"
         animate={{
           WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,
           WebkitMaskSize:`${size}px`

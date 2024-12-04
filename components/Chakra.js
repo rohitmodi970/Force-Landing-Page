@@ -103,7 +103,7 @@ const SpinalCordChakra = () => {
   const size = isHovered ? 400 : 40
   return (
     <div 
-      className="min-h-screen h-[150vh] flex items-center justify-center p-8 overflow-hidden relative "
+      className="min-h-screen h-[150vh] flex items-center justify-center p-8 overflow-hidden relative cursor-none"
       style={{
         background: `
       radial-gradient(
@@ -127,7 +127,7 @@ const SpinalCordChakra = () => {
     >
       {/* Custom Cursor */}
             <motion.div
-        className=" h-[100%] w-[100%] flex items-center justify-center text-orange-400  cursor-default absolute"
+        className=" h-[100%] w-[100%] flex items-center justify-center text-orange-400   absolute"
         animate={{
           WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,
           WebkitMaskSize:`${size}px`
