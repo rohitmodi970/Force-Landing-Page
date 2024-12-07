@@ -17,37 +17,37 @@ const useWordCycle = (wordsArray, intervalTime) => {
 
 const cards = [
   {
-    url: "/pics/24df7619-6bbc-4c58-b943-d970f10ae0e6-min.jpg",
+    url: "/pics/11.jpg",
     title: "Title 1",
     id: 1,
   },
   {
-    url: "/pics/b1c5d76a-d8b2-4b51-91d2-c019a71c215e-min.jpg",
+    url: "/pics/12.jpg",
     title: "Title 2",
     id: 2,
   },
   {
-    url: "/pics/c2b1cb10-9957-4dd4-b6d0-e698d18569bd-min.jpg",
+    url: "/pics/13.jpg",
     title: "Title 3",
     id: 3,
   },
   {
-    url: "/pics/c3fa987a-c831-41ff-b022-ab25b50fec3e-min.jpg",
+    url: "/pics/14.jpg",
     title: "Title 4",
     id: 4,
   },
   {
-    url: "/pics/output-onlinepngtools-min.png",
+    url: "/pics/15.jpg",
     title: "Title 5",
     id: 5,
   },
   {
-    url: "/pics/24df7619-6bbc-4c58-b943-d970f10ae0e6-min.jpg",
+    url: "/pics/11.jpg",
     title: "Title 1",
     id: 6,
   },
   {
-    url: "/pics/b1c5d76a-d8b2-4b51-91d2-c019a71c215e-min.jpg",
+    url: "/pics/12.jpg",
     title: "Title 2",
     id: 7,
   },
