@@ -88,7 +88,7 @@ const forceTextVariants = {
             Discover your Force: Where human potential meets AI-powered evolution
             </p>
             <button className="absolute right-[20%] px-9 py-2 rounded-full bg-chakra-foundation text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
-              <span>Get Started</span>
+              <span>Learn more!</span>
               <HiArrowLongRight />
             </button>
           </div>

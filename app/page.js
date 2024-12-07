@@ -112,7 +112,7 @@ export default function Home() {
         <p onMouseEnter={()=>{setIsHovered(true)}} onMouseLeave={()=>{setIsHovered(false)}}
         style={{
           
-          color: 'var(--chakra-connection);'
+          color: 'var(--chakra-foundation);'
         }}
           className=''
           >
