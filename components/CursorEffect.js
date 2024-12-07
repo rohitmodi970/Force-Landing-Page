@@ -62,7 +62,7 @@ const CursorEffect = () => {
           autoPlay
           loop
           muted
-          className="w-[100%] h-auto"
+          className="w-fit h-auto"
           variants={variants}
           initial="enter"
           animate="center"
@@ -78,7 +78,7 @@ const CursorEffect = () => {
         key={mediaItem}
         src={mediaItem}
         alt="Display"
-        className="w-[100%] h-auto"
+        className="w-fit h-auto"
         variants={variants}
         initial="enter"
         animate="center"
