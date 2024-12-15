@@ -2,16 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { HiArrowLongRight } from "react-icons/hi2";
+// import { motion } from "framer-motion"; // Import Framer Motion
 const CursorEffect = () => {
   const media = [
     "/pics/11.jpg",
     "/pics/12.jpg",
     "/pics/13.jpg",
-    "/pics/01.mp4",
     "/pics/14.jpg",
-    "/pics/02.mp4",
     "/pics/15.jpg",
+    "/pics/02.mp4",
+    "/pics/01.mp4",
     "/pics/03.mp4",
   ];
 
@@ -21,7 +22,7 @@ const CursorEffect = () => {
     const interval = setInterval(() => {
       // Update the index to show the next media item, looping back to the start
       setIndex((prevIndex) => (prevIndex + 1) % media.length);
-    }, 5000); // Change media every 5 seconds
+    }, 15000); // Change media every 5 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [media.length]);
@@ -47,9 +48,32 @@ const CursorEffect = () => {
       window.removeEventListener('mousemove', updateMousePosition);
     };
   }, []);
+  // New animation for the FORCE text (enter, stay, exit)
+const forceTextVariants = {
+  initial: { opacity: 0, scale: 0.5 },
+  animate: {
+    opacity: [0, 1, 1, 0], // Enter, stay, exit
+    scale: [0.5, 1.2, 1.2, 0.5], // Scale up, stay, scale down
+    transition: {
+      duration: 4, // Total cycle duration (enter, stay, exit)
+      ease: "easeInOut",
+      repeat: Infinity, // Loop infinitely
+      repeatType: "loop", // Repeat in a loop
+      times: [0, 0.2, 0.8, 1], // Adjust timing for entering, staying, and exiting
+    },
+  },
+};
+
+  const letters = [
+      { char: "F" },
+      { char: "O" },
+      { char: "R" },
+      { char: "C" },
+      { char: "E" },
+    ];
 
   const { x, y } = mousePosition;
-  const size = isHovered ? 400 : 40;
+  const size = isHovered ? 200 : 40;
 
   const renderMedia = (mediaItem) => {
     const isVideo = mediaItem.endsWith('.mp4');
@@ -78,7 +102,7 @@ const CursorEffect = () => {
         key={mediaItem}
         src={mediaItem}
         alt="Display"
-        className="w-fit h-auto"
+        className="w-full h-auto"
         variants={variants}
         initial="enter"
         animate="center"
@@ -113,6 +137,32 @@ const CursorEffect = () => {
           {renderMedia(media[(index + 1) % media.length])}
         </AnimatePresence>
       </div>
+      <div className="absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 text-black bg-transparent w-[20vw] ml-[15vw]">
+            <div className="flex justify-center gap-2 pl-30">
+              {letters.map((letter, index) => (
+                <motion.div
+                  key={index}
+                  className="text-9xl font-extrabold text-chakra-foundation"
+                  initial="initial"
+                  animate="animate"
+                  variants={forceTextVariants}
+                  transition={{
+                    duration: 4, // Total duration for each cycle
+                    delay: index * 0.2, // Stagger delay for each letter's entry
+                  }}
+                >
+                  {letter.char}
+                </motion.div>
+              ))}
+            </div>
+            <p className="font-semibold translate-x-1/5 text-center text-2xl text-wrap text-white mt-4">
+            Discover your Force: Where human potential meets AI-powered evolution
+            </p>
+            <button className="absolute right-[20%] px-9 py-2 rounded-full bg-chakra-foundation text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
+              <span>Learn more!</span>
+              <HiArrowLongRight />
+            </button>
+          </div>
     </div>
   );
 };

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SpeechToTextInput from "./SpeechRecognition";
+
+
 const QuestionForm = () => {
     const [userDetails, setUserDetails] = useState({ name: "", email: "" });
     const [currentStep, setCurrentStep] = useState(0); // 0: User Details, 1: Questions, 2: Submission
@@ -13,7 +16,7 @@ const QuestionForm = () => {
     const questions = [
         "Write down the top 5 feelings you have while you are with your closest friend?",
         "Imagine making a perfect workout routine for yourself...",
-        "What if we tell you that it’s possible to get there faster...",
+        "What if we tell you that it's possible to get there faster...",
         "What is your biggest challenge right now and how are you trying to overcome that challenge?",
         "What does a perfect life look like to you?",
     ];
@@ -42,6 +45,7 @@ const QuestionForm = () => {
     const handleInputChange = (e) => {
         const updatedAnswers = { ...answers, [questions[currentQuestionIndex]]: e.target.value };
         setAnswers(updatedAnswers);
+        console.log(answers)
     };
 
     const handleNext = () => {
@@ -88,7 +92,7 @@ const QuestionForm = () => {
             setIsSubmitting(false);
         }
     };
-    
+
     const fonts = [
         "'Lobster', cursive",
         "'Poppins', sans-serif",
@@ -100,15 +104,14 @@ const QuestionForm = () => {
         "'Raleway', sans-serif",
         "'Bebas Neue', sans-serif",
         "'Roboto Mono', monospace",
-      ];
-      const [randomFont, setRandomFont] = useState("");
+    ];
+    const [randomFont, setRandomFont] = useState("");
 
-      useEffect(() => {
+    useEffect(() => {
         // Select a random font from the list on every refresh
         const randomIndex = Math.floor(Math.random() * fonts.length);
         setRandomFont(fonts[randomIndex]);
-      }, []); // Empty dependency array ensures it runs only on mount
-    
+    }, []); // Empty dependency array ensures it runs only on mount
 
     const handleRestart = () => {
         setUserDetails({ name: "", email: "" });
@@ -116,17 +119,13 @@ const QuestionForm = () => {
         setCurrentStep(0);
         setCurrentQuestionIndex(0);
         setIsSubmitting(false);
+        sethandleButton(true)
     };
-    console.log('\ncurrent Question Index: ', currentQuestionIndex)
+
     useEffect(() => {
         if ((currentQuestionIndex) > 0) {
-            // console.log('\ncurrent Question Index: ',currentQuestionIndex)
             setShowCard(true)
-
         }
-        // if (((questions.length ) == currentQuestionIndex)) {
-        //     setShowCard(false)
-        // }
         if (currentStep === 1) {
             setShowCardNext(true);
         }
@@ -151,84 +150,79 @@ const QuestionForm = () => {
 
     return (
         <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative">
+            <div className="flex flex-col justify-center items-center">
+                {handleButton ? (
+                    <button 
+                        onClick={() => sethandleButton(false)} 
+                        className="px-12 py-5 rounded-full bg-chakra-insight text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-indigo-400 hover:scale-125 z-10 transition-transform duration-1000"
+                    >
+                        Answer & Discover
+                    </button>
+                ) : ''}
 
-
-            <div className=" flex flex-col justify-center items-center ">
-                {handleButton ? <button onClick={() => sethandleButton(false)} className="px-12 py-5 rounded-full bg-chakra-insight text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-indigo-400 hover:scale-125 z-10 transition-transform duration-1000">
-                    Answer & Discover
-                </button> : ''}
                 {!handleButton && (currentStep === 0) && (
-                    <div className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg  mx-auto p-8 opacity-90">
+                    <div className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg mx-auto p-8 opacity-90">
                         <>
                             <h2 className="font-bold text-xl text-center mb-4">
                                 Please provide your details to begin
                             </h2>
-                            <input
-                                type="text"
-                                name="name"
+                            <SpeechToTextInput 
                                 placeholder="Enter your name"
-                                className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl"
+                                className="mb-5"
                                 value={userDetails.name}
-                                onChange={handleUserDetailsChange}
+                                onTranscriptChange={(e) => 
+                                    setUserDetails(prev => ({ ...prev, name: e.target.value }))
+                                }
                             />
-                            <input
-                                type="email"
-                                name="email"
+                            <SpeechToTextInput 
                                 placeholder="Enter your email"
-                                className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl my-5"
+                                className="mb-5"
                                 value={userDetails.email}
-                                onChange={handleUserDetailsChange}
+                                onTranscriptChange={(e) => 
+                                    setUserDetails(prev => ({ ...prev, email: e.target.value }))
+                                }
                             />
                             <button
                                 onClick={handleUserDetailsSubmit}
-                                whilehover={{ scale: 1.05 }}
-                                whiletap={{ scale: 0.95 }}
-                                className={`w-full px-4 py-3 rounded-xl transition-all text-white bg-white/30 hover:bg-white/50
-                      }`}
+                                className={`w-full px-4 py-3 rounded-xl transition-all text-white bg-white/30 hover:bg-white/50`}
                             >
                                 Start Questions
                             </button>
                         </>
                     </div>
                 )}
-                {/* previous questions */}
-                {showCard ?
 
-                    <div className=" absolute w-[30vw] left-[18vw] text-white ">
-
-                        <>
-                            <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10 ">
-                                <label
-                                    htmlFor={`question-${currentQuestionIndex - 1}`}
-                                    className="font-bold text-xl text-center mb-4"
-                                >
-                                    {questions[currentQuestionIndex - 1]}
-                                </label>
-                                <textarea
-                                    id={`question-${currentQuestionIndex - 1}`}
-                                    rows="4"
-                                    className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl min-h-[120px] resize-none"
-                                    placeholder="Type your answer here..."
-                                    value={answers[questions[currentQuestionIndex - 1]] || ""}
-                                    onChange={handleInputChange}
-                                    disabled
-                                ></textarea>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={!answers[questions[currentQuestionIndex - 1]?.trim()]}
-                                    className={`px-4 py-2 text-sm font-medium text-white rounded-lg bg-blue-500 `}
-                                >
-                                    {currentQuestionIndex - 1 < questions.length - 1 ? "Next" : "Submit"}
-                                </button>
-                            </div>
-                        </>
+                {/* Previous questions section */}
+                {showCard && (
+                    <div className="absolute w-[30vw] left-[18vw] text-white">
+                        <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10">
+                            <label
+                                htmlFor={`question-${currentQuestionIndex - 1}`}
+                                className="font-bold text-xl text-center mb-4"
+                            >
+                                {questions[currentQuestionIndex - 1]}
+                            </label>
+                            <SpeechToTextInput 
+                                id={`question-${currentQuestionIndex - 1}`}
+                                placeholder="Type your answer here..."
+                                value={answers[questions[currentQuestionIndex - 1]] || ""}
+                                onTranscriptChange={handleInputChange}
+                                className="mb-4"
+                                disabled
+                            />
+                            <button
+                                onClick={handleNext}
+                                disabled={!answers[questions[currentQuestionIndex - 1]?.trim()]}
+                                className={`px-4 py-2 text-sm font-medium text-white rounded-lg bg-blue-500`}
+                            >
+                                {currentQuestionIndex - 1 < questions.length - 1 ? "Next" : "Submit"}
+                            </button>
+                        </div>
                     </div>
-                    : ''}
+                )}
 
                 {currentStep === 1 && (
-
                     <motion.div
-                    
                         key={currentQuestionIndex}
                         variants={cardTransition}
                         initial="hidden"
@@ -237,29 +231,36 @@ const QuestionForm = () => {
                         transition={{ duration: 0.6 }}
                         className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg mx-auto p-7 no-underline opacity-90"
                     >
-                        <label htmlFor={`question-${currentQuestionIndex}`} className="text-2xl font-bold text-white mb-6" style={{ fontFamily: randomFont }}>
+                        <label 
+                            htmlFor={`question-${currentQuestionIndex}`} 
+                            className="text-2xl font-bold text-white mb-6" 
+                            style={{ fontFamily: randomFont }}
+                        >
                             {questions[currentQuestionIndex]}
                         </label>
-                        <textarea
+                        
+                        <SpeechToTextInput 
                             id={`question-${currentQuestionIndex}`}
-                            rows="4"
-                            className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl min-h-[120px] resize-none border-2 border-orange-200 "
-                            placeholder="Type your answer here..."
+                            placeholder="Type or speak your answer here..."
                             value={answers[questions[currentQuestionIndex]] || ""}
-                            onChange={handleInputChange}
-                        ></textarea>
+                            onTranscriptChange={handleInputChange}
+                            className="mb-4"
+                        />
+                        
                         <motion.button
                             onClick={handleNext}
                             whiletap={{ scale: 0.95 }}
                             disabled={!answers[questions[currentQuestionIndex]?.trim()]}
                             whilehover={{ scale: 1.05 }}
-                            className={`w-full px-4 py-3 rounded-xl transition-all text-white ${answers[questions[currentQuestionIndex]?.trim()]
-                                ? "bg-white/30 hover:bg-white/50"
-                                : "bg-white/10 cursor-not-allowed"
-                                }`}
+                            className={`w-full px-4 py-3 rounded-xl transition-all text-white ${
+                                answers[questions[currentQuestionIndex]?.trim()]
+                                    ? "bg-white/30 hover:bg-white/50"
+                                    : "bg-white/10 cursor-not-allowed"
+                            }`}
                         >
                             {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
                         </motion.button>
+                        
                         <div className="mt-6 w-full bg-white/20 rounded-full h-2.5">
                             <motion.div
                                 initial={{ width: 0 }}
@@ -270,45 +271,38 @@ const QuestionForm = () => {
                         </div>
                     </motion.div>
                 )}
-                {/* next questions  */}
-                {(showCardNext && (currentQuestionIndex <= questions.length - 1)) ?
 
-                    <div className=" absolute w-[30vw] right-[18vw]  ">
-
-                        <>
-                            <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10 ">
-
-                                <label
-                                    htmlFor={`question-${currentQuestionIndex + 1}`}
-                                    className="font-bold text-xl text-center mb-4 text-white"
-                                >
-                                    {questions[currentQuestionIndex + 1]}
-                                </label>
-                                <textarea
-                                    id={`question-${currentQuestionIndex + 1}`}
-                                    rows="4"
-                                    className="w-full p-3 bg-white/20 backdrop-blur-sm text-white rounded-xl min-h-[120px] resize-none"
-                                    placeholder="Type your answer here..."
-                                    value={answers[questions[currentQuestionIndex + 1]] || ""}
-                                    onChange={handleInputChange}
-                                    disabled
-                                ></textarea>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={!answers[questions[currentQuestionIndex + 1]?.trim()]}
-                                    className={`px-4 py-2 text-sm font-medium text-white rounded-lg bg-gray-400
-                                        }`}
-                                >
-                                    {currentQuestionIndex + 1 < questions.length - 1 ? "Next" : "Submit"}
-                                </button>
-                            </div>
-                        </>
+                {/* Next questions section */}
+                {(showCardNext && (currentQuestionIndex <= questions.length - 1)) && (
+                    <div className="absolute w-[30vw] right-[18vw]">
+                        <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10">
+                            <label
+                                htmlFor={`question-${currentQuestionIndex + 1}`}
+                                className="font-bold text-xl text-center mb-4 text-white"
+                            >
+                                {questions[currentQuestionIndex + 1]}
+                            </label>
+                            <SpeechToTextInput 
+                                id={`question-${currentQuestionIndex + 1}`}
+                                placeholder="Type your answer here..."
+                                value={answers[questions[currentQuestionIndex + 1]] || ""}
+                                onTranscriptChange={handleInputChange}
+                                className="mb-4"
+                                disabled
+                            />
+                            <button
+                                onClick={handleNext}
+                                disabled={!answers[questions[currentQuestionIndex + 1]?.trim()]}
+                                className={`px-4 py-2 text-sm font-medium text-white rounded-lg bg-gray-400`}
+                            >
+                                {currentQuestionIndex + 1 < questions.length - 1 ? "Next" : "Submit"}
+                            </button>
+                        </div>
                     </div>
-                    : ''}
-
+                )}
 
                 {currentStep === 2 && (
-                    <> <div className="flex flex-col items-center justify-center  bg-transparent text-gray-200 p-6">
+                    <div className="flex flex-col items-center justify-center bg-transparent text-gray-200 p-6">
                         <motion.div
                             className="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-md text-center"
                             initial={{ opacity: 0, y: -20 }}
@@ -327,10 +321,11 @@ const QuestionForm = () => {
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
-                                className={`px-6 py-3 w-full text-sm font-medium text-gray-900 rounded-lg transition-colors ${isSubmitting
+                                className={`px-6 py-3 w-full text-sm font-medium text-gray-900 rounded-lg transition-colors ${
+                                    isSubmitting
                                         ? "bg-gray-600 cursor-not-allowed"
                                         : "bg-green-500 hover:bg-green-600"
-                                    }`}
+                                }`}
                             >
                                 {isSubmitting ? "Submitting..." : "Submit"}
                             </motion.button>
@@ -344,7 +339,6 @@ const QuestionForm = () => {
                             </motion.button>
                         </motion.div>
                     </div>
-                    </>
                 )}
             </div>
         </div>

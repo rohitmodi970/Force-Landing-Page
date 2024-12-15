@@ -11,7 +11,7 @@ import ModelViewer from "@/components/ModelViewer";
 import SpinalCordChakra from "@/components/Chakra";
 import CursorEffect from "@/components/CursorEffect";
 import { motion, AnimatePresence } from 'framer-motion';
-
+import Dictaphone from "@/components/SpeechRecognition";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -58,7 +58,7 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [iframeLoaded]);
-//   // Hook to track mouse position
+  //   // Hook to track mouse position
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false)
 
@@ -90,60 +90,61 @@ export default function Home() {
       )}
       <div className="bg-black min-h-screen max-w-screen">
         <Navbar />
-        <HeroSection />
-        <div className="h-[55vh] relative">
-             <motion.div
-        className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute bottom-10 text-center"
-        animate={{
-          WebkitMaskPosition: `${x-size/2}px ${y-size/2}px`,
-          WebkitMaskSize:`${size}px`
-        }}
-        transition={{
-          type:"tween" , ease:"backOut"
-        }}
-        style={{
-          maskImage: 'url(/pics/mask.svg)',
-          backgroundColor: '#1C1C1C',
-          maskRepeat: 'no-repeat',
-          color: 'orange',
-          maskSize: '40px'
-        }}
-      >
-        <p onMouseEnter={()=>{setIsHovered(true)}} onMouseLeave={()=>{setIsHovered(false)}}
-        style={{
-          
-          color: 'var(--chakra-foundation);'
-        }}
-          className=''
+        {/* <HeroSection /> */}
+        <CursorEffect />
+        <div className="min-h-[100vh] relative flex flex-col justify-center items-center">
+          <motion.div
+            className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute  text-center"
+            animate={{
+              WebkitMaskPosition: `${x - size / 2}px ${y - size / 2}px`,
+              WebkitMaskSize: `${size}px`
+            }}
+            transition={{
+              type: "tween", ease: "backOut"
+            }}
+            style={{
+              maskImage: 'url(/pics/mask.svg)',
+              backgroundColor: '#1C1C1C',
+              maskRepeat: 'no-repeat',
+              color: 'orange',
+              maskSize: '40px'
+            }}
           >
-          Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
-        </p>
-      </motion.div>
+            <p onMouseEnter={() => { setIsHovered(true) }} onMouseLeave={() => { setIsHovered(false) }}
+              style={{
+
+                color: 'var(--chakra-foundation);'
+              }}
+              className=''
+            >
+              Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
+            </p>
+          </motion.div>
           <div className="font-bold text-6xl flex justify-center items-center">
             <h1 className="text-orange-400 w-[35vw]">   What is FORCE ?</h1>
           </div>
           <div className="flex flex-col justify-center items-center">
             <p className="text-white font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-orange-400">
-            Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
+              Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
             </p>
           </div>
           <p className="text-orange-400 font-medium text-5xl justify-center text-center w-[100%] tracking-tighter mt-10 hover:text-white">
-           Discover your direction in Life with the help of FORCE
-            </p>
+            Discover your direction in Life with the help of FORCE
+          </p>
         </div>
-        <SpinalCordChakra/>
+        <SpinalCordChakra />
         <MainContent />
         <Marquee />
         <div className="relative">
-        <div className="absolute top-0 left-0 w-full h-full z-0">
-          {/* ModelViewer in the background */}
-          <ModelViewer modelPath="/Termanation2.glb" />
+          <div className="absolute top-0 left-0 w-full h-full z-0">
+            {/* ModelViewer in the background */}
+            <ModelViewer modelPath="/Termanation2.glb" />
+          </div>
+          <div className="relative z-10">
+            {/* QuestionForm on top */}
+            <QuestionForm />
+          </div>
         </div>
-        <div className="relative z-10">
-          {/* QuestionForm on top */}
-          <QuestionForm />
-        </div>
-      </div>
         <div className="h-screen bg-gradient-to-b from-black to-purple-500 flex flex-col justify-center">
           <h1 className="text-5xl semibold text-white text-center hover:text-orange-400">
             Try FORCE Today !!!
@@ -160,8 +161,9 @@ export default function Home() {
             </form>
           </div>
         </div>
-        <CursorEffect/>
+
       </div>
+      {/* <Dictaphone /> */}
     </>
   );
 }
