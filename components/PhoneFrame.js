@@ -6,7 +6,7 @@ const Phone = () => {
   return (
       <div className="screen-max-width">
         <div className="mt-10 ml-36 mb-14">
-          <div className="relative h-full flex-center w-[80%]">
+          <div className="relative h-full flex-center w-[85%]">
             <div className="overflow-hidden relative scale-x-[0.90] origin-right">
               <img 
                 src="./frame.png"
