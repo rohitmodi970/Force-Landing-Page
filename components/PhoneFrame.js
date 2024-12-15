@@ -5,9 +5,9 @@ const Phone = () => {
 
   return (
       <div className="screen-max-width">
-        <div className="mt-10 md:mt-20 mb-14">
-          <div className="relative h-full flex-center w-[95%]">
-            <div className="overflow-hidden relative scale-x-[0.95] origin-right">
+        <div className="mt-10 ml-36 mb-14">
+          <div className="relative h-full flex-center w-[80%]">
+            <div className="overflow-hidden relative scale-x-[0.90] origin-right">
               <img 
                 src="./frame.png"
                 alt="frame"
@@ -26,7 +26,7 @@ const Phone = () => {
               </div>
             </div>
           </div>
-          <h2 className="mt-6 text-2xl font-bold text-center tracking-wide 
+          <h2 className="mt-6 text-2xl mr-12 font-bold text-center tracking-wide 
         bg-white
         text-transparent bg-clip-text 
         transform transition-all duration-300 

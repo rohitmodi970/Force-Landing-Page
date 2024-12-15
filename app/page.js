@@ -163,7 +163,6 @@ export default function Home() {
             </form>
           </div>
         </div>
-        <CursorEffect/>
         <ScrollWave/>
 
       </div>
