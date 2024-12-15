@@ -11,6 +11,7 @@ import ModelViewer from "@/components/ModelViewer";
 import SpinalCordChakra from "@/components/Chakra";
 import CursorEffect from "@/components/CursorEffect";
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollWave from "@/components/SVG";
 
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
@@ -161,6 +162,7 @@ export default function Home() {
           </div>
         </div>
         <CursorEffect/>
+        <ScrollWave/>
       </div>
     </>
   );
