@@ -1,90 +1,101 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from "react";
 
 const ScrollWave = () => {
   const [wavePaths, setWavePaths] = useState([]); // Store paths for each part
-  const [visibleFeatures, setVisibleFeatures] = useState(new Array(7).fill(false)); // Track visibility of each feature
+  const [visibleFeatures, setVisibleFeatures] = useState([]); // Track visibility of each feature card
+  const [svgWidth, setSvgWidth] = useState(800); // Default SVG width
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    const generateWavePaths = (progress) => {
-      const totalParts = 7;
-      const totalPoints = 40;
-      const amplitude = 100; // Uniform high amplitude
-      const paths = [];
-
-      for (let part = 0; part < totalParts; part++) {
-        let path = 'M0,150 ';
-        const startProgress = part / totalParts;
-        const endProgress = (part + 1) / totalParts;
-        const currentProgress = Math.min(
-          Math.max((progress - startProgress) / (endProgress - startProgress), 0),
-          1
-        );
-
-        for (let i = 1; i <= totalPoints * currentProgress; i++) {
-          const wavelength = 800 / totalPoints;
-          const frequency = 2 * Math.PI * (i / totalPoints);
-
-          // Wave traversing both sides of the axis
-          const x1 = (i - 0.5) * wavelength;
-          const y1 = 150 + amplitude * Math.sin(frequency);
-          const x2 = i * wavelength;
-          const y2 = 150 - amplitude * Math.sin(frequency);
-
-          path += `Q${x1},${y1} ${x2},${y2} `;
-        }
-        paths.push(path);
+  // Function to generate smooth sinusoidal wave paths
+  const generateWavePaths = (progress) => {
+    const totalParts = 9;
+    const totalPoints = 300;
+    const amplitude = 120;
+    const paths = [];
+  
+    // Control the frequency based on the scroll progress
+    const maxFrequency = 24; // Initial high frequency
+    const minFrequency = 8; // Minimum frequency for the wave at the end of the scroll
+    const currentFrequency = maxFrequency + (minFrequency - maxFrequency) * progress;
+  
+    for (let part = 0; part < totalParts; part++) {
+      let path = "M0,150 ";
+      const currentProgress = Math.min(
+        Math.max((progress - part / totalParts) / (1 / totalParts), 0),
+        1
+      );
+  
+      for (let i = 1; i <= totalPoints * currentProgress; i++) {
+        const wavelength = svgWidth / totalPoints;
+  
+        // Use dynamic frequency for the wave
+        const frequency = currentFrequency * Math.PI * (i / totalPoints);
+  
+        const x = i * wavelength;
+        const y =
+          150 +
+          (amplitude * Math.sin(frequency + part * Math.PI)) *
+            (part % 2 === 0 ? 1 : -1);
+  
+        path += `L${x},${y} `;
       }
-      return paths;
-    };
+      paths.push(path);
+    }
+    return paths;
+  };
+  
 
+  useEffect(() => {
+    // Update SVG width on mount
+    if (typeof window !== "undefined") {
+      setSvgWidth(window.innerWidth);
+
+      const handleResize = () => setSvgWidth(window.innerWidth);
+      window.addEventListener("resize", handleResize);
+
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return;
 
       const { top } = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      // Calculate scroll progress (0 to 1) with a delay factor
+      // Calculate scroll progress
       const scrollProgress = 1 - top / windowHeight;
-      const scrollSpeedFactor = 0.5; // Adjust this value to make the SVG appear slower
-      const delayedProgress = Math.max(0, Math.min(1, scrollProgress * scrollSpeedFactor));  // Adjusted progress to allow full scroll
+      const scrollSpeedFactor = 0.5;
+      const delayedProgress = Math.max(0, Math.min(1, scrollProgress * scrollSpeedFactor));
 
       const newPaths = generateWavePaths(delayedProgress);
       setWavePaths(newPaths);
+
+      // Determine which feature cards to show
+      const visibility = colors.map((_, index) =>
+        delayedProgress > index / colors.length
+      );
+      setVisibleFeatures(visibility);
     };
 
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     handleScroll(); // Initial call
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [svgWidth]);
 
-  // Intersection Observer setup to track visibility of feature cards
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const newVisibleFeatures = [...visibleFeatures];
-        entries.forEach(entry => {
-          const index = parseInt(entry.target.dataset.index);
-          newVisibleFeatures[index] = entry.isIntersecting;
-        });
-        setVisibleFeatures(newVisibleFeatures);
-      },
-      { threshold: 0.5 } // Trigger when 50% of the element is in view
-    );
-
-    const featureCards = document.querySelectorAll('.feature-card');
-    featureCards.forEach(card => observer.observe(card));
-
-    return () => {
-      featureCards.forEach(card => observer.unobserve(card));
-    };
-  }, [visibleFeatures]);
-
-  const colors = ["#000000", "#e74c3c", "#2ecc71", "#9b59b6", "#f1c40f", "#1abc9c", "#e67e22"];
+  const colors = [
+    "#000000",
+    "#000000",
+    "#ff5733",
+    "#33c9ff",
+    "#9b59b6",
+    "#2bff88",
+    "#ffbd33",
+    "#33ff57",
+    "#ff33a8",
+  ];
   const features = [
     "Feature 1: Dynamic scrolling wave.",
     "Feature 2: High amplitude transitions.",
@@ -92,54 +103,69 @@ const ScrollWave = () => {
     "Feature 4: Responsive SVG rendering.",
     "Feature 5: Optimized for performance.",
     "Feature 6: Vibrant color segmentation.",
-    "Feature 7: Scroll-activated interactivity."
+    "Feature 7: Scroll-activated interactivity.",
   ];
 
   return (
     <div
-  ref={containerRef}
-  className="w-full min-h-[200vh] flex flex-col items-center justify-start relative mt-16 z-10" // Add z-index here
->
-  <div className="sticky top-[20vh] z-0 w-full">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
-      {wavePaths.map((path, index) => (
-        <path
-          key={index}
-          d={path}
-          fill="none"
-          stroke={colors[index % colors.length]} // Ensure it cycles through all the colors
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      ))}
-    </svg>
-  </div>
+      ref={containerRef}
+      className="w-full min-h-[200vh] flex flex-col items-center relative mt-48"
+    >
+      {/* EM Wave SVG */}
+      <div className="sticky top-[20vh] w-full z-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox={`0 0 ${svgWidth} 300`}
+          className="w-full h-[300px]"
+        >
+          {/* Glow filter for EM effect */}
+          <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-  {/* Feature Cards */}
-  <div className="w-full z-30 mt-16 flex flex-wrap justify-center gap-4">
-    {features.map((feature, index) => (
-      <div
-        key={index}
-        className={`feature-card w-48 p-4 bg-white shadow-lg rounded-lg border text-center transition-opacity duration-500 ${visibleFeatures[index] ? 'opacity-100' : 'opacity-0'}`}
-        style={{
-          backgroundColor: index === 0 ? `#0000FF50` : `${colors[index % colors.length]}50`,
-          borderLeft: index === 0 ? `4px solid #87CEEB` : `4px solid ${colors[index % colors.length]}`,
-          borderRight: index === 0 ? `4px solid #87CEEB` : `4px solid ${colors[index % colors.length]}`,
-          transformStyle: 'preserve-3d',
-          transform: `rotateY(${index % 2 === 0 ? '10' : '-10'}deg)`,
-          zIndex: 40, // Ensure feature cards have the highest z-index
-        }}
-        data-index={index} // Store the index to track visibility
-      >
-        <h3 className="text-lg font-bold" style={{ color: index === 0 ? `#0000FF` : colors[index % colors.length] }}>
-          Part {index + 1}
-        </h3>
-        <p className="text-sm text-white">{feature}</p>
+          {/* Render wave paths */}
+          {wavePaths.map((path, index) => (
+            <path
+              key={index}
+              d={path}
+              fill="none"
+              stroke={colors[index % colors.length]}
+              strokeWidth="3"
+              filter="url(#glow)"
+              opacity="0.8"
+            />
+          ))}
+        </svg>
       </div>
-    ))}
-  </div>
-</div>
 
+      {/* Feature Cards */}
+      <div className="w-full z-30 fixed bottom-8 flex flex-row items-center gap-4 mt-16">
+        {features.map((feature, index) => (
+          <div
+            key={index}
+            className={`feature-card w-64 p-4 bg-white shadow-lg rounded-lg text-center transition-opacity duration-500 ${
+              visibleFeatures[index + 2] ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              backgroundColor: `${colors[(index + 2) % colors.length]}50`,
+              borderLeft: `4px solid ${colors[(index + 2) % colors.length]}`,
+              borderRight: `4px solid ${colors[(index + 2) % colors.length]}`,
+            }}
+          >
+            <h3 className="text-lg font-bold" style={{ color: "white" }}>
+              Part {index + 1}
+            </h3>
+            <p className="text-sm text-white">{feature}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
