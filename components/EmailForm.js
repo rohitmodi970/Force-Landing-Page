@@ -39,7 +39,7 @@ const EmailForm = () => {
     };
 
     return (
-        <div className="flex gap-7 justify-center items-center">
+        <div className="flex gap-7 justify-center items-center ">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                   <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
                     <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z" />

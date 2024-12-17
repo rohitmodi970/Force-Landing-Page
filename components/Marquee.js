@@ -17,37 +17,37 @@ const useWordCycle = (wordsArray, intervalTime) => {
 
 const cards = [
   {
-    url: "/pics/11.jpg",
+    url: "/pics/11.png",
     title: "Title 1",
     id: 1,
   },
   {
-    url: "/pics/12.jpg",
+    url: "/pics/12.png",
     title: "Title 2",
     id: 2,
   },
   {
-    url: "/pics/13.jpg",
+    url: "/pics/13.png",
     title: "Title 3",
     id: 3,
   },
   {
-    url: "/pics/14.jpg",
+    url: "/pics/14.png",
     title: "Title 4",
     id: 4,
   },
   {
-    url: "/pics/15.jpg",
+    url: "/pics/15.png",
     title: "Title 5",
     id: 5,
   },
   {
-    url: "/pics/11.jpg",
+    url: "/pics/11.png",
     title: "Title 1",
     id: 6,
   },
   {
-    url: "/pics/12.jpg",
+    url: "/pics/12.png",
     title: "Title 2",
     id: 7,
   },
@@ -75,7 +75,7 @@ const HorizontalScrollCarousel = () => {
   const x = useTransform(scrollYProgress, [0, 1], ["1%", "-75%"]);
 
   return (
-    <section ref={targetRef} className="relative h-[400vh] bg-black">
+    <section ref={targetRef} className="relative h-[400vh] bg-gradient-to-b from-white via-white/50 to-black">
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
         {/* Text Container */}
         <div className="absolute z-30 text-center">
@@ -157,7 +157,7 @@ const Card = ({ card }) => {
         rotateY,
         transform: "translateZ(50px)"
       }}
-      className="group relative h-[600px] w-[800px] overflow-hidden bg-black rounded-2xl shadow-2xl cursor-pointer transition-all duration-300"
+      className="group relative h-[600px] w-[800px] overflow-hidden bg-gradient-to-b from-white via-white/50 to-black rounded-2xl shadow-2xl cursor-pointer transition-all duration-300"
     >
       {/* Background Image with Parallax Effect */}
       <motion.div
