@@ -90,11 +90,11 @@ export default function Home() {
           ></video>
         </div>
       )}
-      <div className="bg-black min-h-screen max-w-screen">
+      <div className="bg-white min-h-screen max-w-screen">
         <Navbar />
         {/* <HeroSection /> */}
         <CursorEffect />
-        <div className="min-h-[100vh] relative flex flex-col justify-center items-center">
+        <div className="min-h-[100vh] relative flex flex-col bg-gradient-to-b from-white/50 to-white justify-center items-center">
           <motion.div
             className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute  text-center"
             animate={{
@@ -122,11 +122,18 @@ export default function Home() {
               Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
             </p>
           </motion.div>
+          <div 
+          className="absolute z-10 w-full h-32 bg-gradient-to-b from-transparent via-white/50 to-white"
+          style={{
+            top: '-28%',
+            transform: 'translateY(70%)'
+          }}
+        />
           <div className="font-bold text-6xl flex justify-center items-center">
             <h1 className="text-orange-400 w-[35vw]">   What is FORCE ?</h1>
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-white font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-orange-400">
+            <p className="text-black font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-orange-400">
               Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
             </p>
           </div>
@@ -134,7 +141,7 @@ export default function Home() {
             Discover your direction in Life with the help of FORCE
           </p>
         </div>
-        <SpinalCordChakra />
+        <ScrollWave/>
         <MainContent />
         <Marquee />
         <div className="relative">
@@ -163,7 +170,7 @@ export default function Home() {
             </form>
           </div>
         </div>
-        <ScrollWave/>
+
 
       </div>
       {/* <Dictaphone /> */}
