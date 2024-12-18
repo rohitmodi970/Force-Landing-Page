@@ -14,7 +14,7 @@ const Phone = () => {
                 className="bg-transparent relative z-10 w-full h-auto"
               />
               {/* Position the video inside the frame */}
-              <div className="hiw-video absolute top-[3%] bottom-[3%] left-[3%] w-[96%] h-[93%]">
+              <div className="hiw-video absolute top-[3%] bottom-[3%] left-[2%] w-[96%] h-[93%]">
                 <video 
                   className="pointer-events-none w-full h-full object-cover rounded-[4rem]" 
                   playsInline preload="none" 
