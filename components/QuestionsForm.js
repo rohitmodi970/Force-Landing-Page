@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SpeechToTextInput from "./SpeechRecognition";
+import PhotoCard from "./PhotoCard";
 
 
 const QuestionForm = () => {
     const [userDetails, setUserDetails] = useState({ name: "", email: "" });
-    const [currentStep, setCurrentStep] = useState(0); // 0: User Details, 1: Questions, 2: Submission
+    const [currentStep, setCurrentStep] = useState(1); // 0: User Details, 1: Questions, 2: Submission
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showCard, setShowCard] = useState(false)
     const [showCardNext, setShowCardNext] = useState(false)
     const [handleButton, sethandleButton] = useState(true)
-
+    const [files, setFiles] = useState({}); // Store files for each question
     const questions = [
         "Write down the top 5 feelings you have while you are with your closest friend?",
         "Imagine making a perfect workout routine for yourself...",
@@ -47,10 +48,25 @@ const QuestionForm = () => {
         setAnswers(updatedAnswers);
         console.log(answers)
     };
-
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFiles((prevFiles) => ({
+                ...prevFiles,
+                [questions[currentQuestionIndex]]: selectedFile,
+            }));
+        }
+        console.log(selectedFile)
+    };
     const handleNext = () => {
         const currentAnswer = answers[questions[currentQuestionIndex]]?.trim();
+        const currentFile = files[questions[currentQuestionIndex]];
+    
         if (currentAnswer) {
+            if (!currentFile) {
+                alert("Please upload an image for this question.");
+                return;
+            }
             if (currentQuestionIndex < questions.length - 1) {
                 setCurrentQuestionIndex(currentQuestionIndex + 1);
             } else {
@@ -63,21 +79,24 @@ const QuestionForm = () => {
 
     const handleSubmit = async () => {
         if (isSubmitting) return;
-
-        const payload = {
-            name: userDetails.name,
-            email: userDetails.email,
-            responses: answers, // Already a plain object
-        };
-
+    
+        const formData = new FormData();
+        formData.append("name", userDetails.name);
+        formData.append("email", userDetails.email);
+        formData.append("responses", JSON.stringify(answers));
+    
+        // Append files to the form data
+        Object.keys(files).forEach((question, index) => {
+            formData.append(`file_${index}`, files[question]);
+        });
+    
         try {
             setIsSubmitting(true);
             const response = await fetch("/api/user-action", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+                body: formData,
             });
-
+    
             if (response.ok) {
                 alert("Thank you for submitting your responses!");
                 handleRestart();
@@ -92,7 +111,7 @@ const QuestionForm = () => {
             setIsSubmitting(false);
         }
     };
-
+    
     const fonts = [
         "'Lobster', cursive",
         "'Poppins', sans-serif",
@@ -147,13 +166,22 @@ const QuestionForm = () => {
     };
 
     const buttonHover = { scale: 1.1 };
-
+const formRef = useRef()
+const handleDelete = async (index) => {
+    const newFiles = Object.keys(files)
+        .filter((_, i) => i !== index)
+        .reduce((obj, key) => {
+            obj[key] = files[key];
+            return obj;
+        }, {});
+    setFiles(newFiles);
+}
     return (
         <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative">
             <div className="flex flex-col justify-center items-center">
                 {handleButton ? (
-                    <button 
-                        onClick={() => sethandleButton(false)} 
+                    <button
+                        onClick={() => sethandleButton(false)}
                         className="px-12 py-5 rounded-full bg-chakra-insight text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-indigo-400 hover:scale-125 z-10 transition-transform duration-1000"
                     >
                         Answer & Discover
@@ -166,19 +194,19 @@ const QuestionForm = () => {
                             <h2 className="font-bold text-xl text-center mb-4">
                                 Please provide your details to begin
                             </h2>
-                            <SpeechToTextInput 
+                            <SpeechToTextInput
                                 placeholder="Enter your name"
                                 className="mb-5"
                                 value={userDetails.name}
-                                onTranscriptChange={(e) => 
+                                onTranscriptChange={(e) =>
                                     setUserDetails(prev => ({ ...prev, name: e.target.value }))
                                 }
                             />
-                            <SpeechToTextInput 
+                            <SpeechToTextInput
                                 placeholder="Enter your email"
                                 className="mb-5"
                                 value={userDetails.email}
-                                onTranscriptChange={(e) => 
+                                onTranscriptChange={(e) =>
                                     setUserDetails(prev => ({ ...prev, email: e.target.value }))
                                 }
                             />
@@ -202,7 +230,7 @@ const QuestionForm = () => {
                             >
                                 {questions[currentQuestionIndex - 1]}
                             </label>
-                            <SpeechToTextInput 
+                            <SpeechToTextInput
                                 id={`question-${currentQuestionIndex - 1}`}
                                 placeholder="Type your answer here..."
                                 value={answers[questions[currentQuestionIndex - 1]] || ""}
@@ -223,53 +251,78 @@ const QuestionForm = () => {
 
                 {currentStep === 1 && (
                     <motion.div
-                        key={currentQuestionIndex}
-                        variants={cardTransition}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        transition={{ duration: 0.6 }}
-                        className="z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-lg mx-auto p-7 no-underline opacity-90"
+                    key={currentQuestionIndex}
+                    variants={cardTransition}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    transition={{ duration: 0.6 }}
+                    className="relative z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-xl mx-auto p-8 opacity-95"
+                >
+                    <label
+                        htmlFor={`question-${currentQuestionIndex}`}
+                        className="block text-2xl font-bold text-white mb-6"
+                        style={{ fontFamily: randomFont }}
                     >
-                        <label 
-                            htmlFor={`question-${currentQuestionIndex}`} 
-                            className="text-2xl font-bold text-white mb-6" 
-                            style={{ fontFamily: randomFont }}
-                        >
-                            {questions[currentQuestionIndex]}
-                        </label>
-                        
-                        <SpeechToTextInput 
-                            id={`question-${currentQuestionIndex}`}
-                            placeholder="Type or speak your answer here..."
-                            value={answers[questions[currentQuestionIndex]] || ""}
-                            onTranscriptChange={handleInputChange}
-                            className="mb-4"
+                        {questions[currentQuestionIndex]}
+                    </label>
+                
+                    <SpeechToTextInput
+                        id={`question-${currentQuestionIndex}`}
+                        placeholder="Type or speak your answer here..."
+                        value={answers[questions[currentQuestionIndex]] || ""}
+                        onTranscriptChange={handleInputChange}
+                        className="w-full px-4 py-2 text-black bg-white rounded-lg mb-4 focus:ring-2 focus:ring-orange-300"
+                    />
+                
+                    {/* <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="w-full text-sm file:px-4 file:py-2 file:border-0 file:rounded-lg file:bg-white file:text-black file:cursor-pointer mb-4"
+                    /> */}
+                    <form action="" ref={formRef}>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="w-full text-sm file:px-4 file:py-2 file:border-0 file:rounded-lg file:bg-white file:text-black file:cursor-pointer mb-4"
+                    />
+                    <h5 className="text-red-500">(*) Only accept image files less than 1mb in size. Upto 1 photos</h5>
+                    {/* Preview Images */}
+                    <div  className="">
+                        {
+                            Object.values(files).map((file, index) => (
+                                <PhotoCard key={index} url = {URL.createObjectURL(file)} onClick={()=>handleDelete(index)}/>
+                            ))
+                        }
+                    </div>
+                    </form>
+                
+                    <motion.button
+                        onClick={handleNext}
+                        whileTap={{ scale: 0.95 }}
+                        whileHover={ { scale: 1.05 }}
+                        disabled={!answers[questions[currentQuestionIndex]?.trim() ]}
+                        className={`w-full px-4 py-3 rounded-xl transition-all text-white font-semibold ${
+                            answers[questions[currentQuestionIndex]?.trim()]
+                                ? "bg-white/40 hover:bg-white/50"
+                                : "bg-white/10 cursor-not-allowed"
+                        }`}
+                    >
+                        {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
+                    </motion.button>
+                
+                    <div className="mt-6 w-full bg-white/20 rounded-full h-2.5">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                            transition={{ duration: 0.5 }}
+                            className="bg-white h-2.5 rounded-full"
                         />
-                        
-                        <motion.button
-                            onClick={handleNext}
-                            whiletap={{ scale: 0.95 }}
-                            disabled={!answers[questions[currentQuestionIndex]?.trim()]}
-                            whilehover={{ scale: 1.05 }}
-                            className={`w-full px-4 py-3 rounded-xl transition-all text-white ${
-                                answers[questions[currentQuestionIndex]?.trim()]
-                                    ? "bg-white/30 hover:bg-white/50"
-                                    : "bg-white/10 cursor-not-allowed"
-                            }`}
-                        >
-                            {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
-                        </motion.button>
-                        
-                        <div className="mt-6 w-full bg-white/20 rounded-full h-2.5">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-                                transition={{ duration: 0.5 }}
-                                className="bg-white h-2.5 rounded-full"
-                            ></motion.div>
-                        </div>
-                    </motion.div>
+                    </div>
+                </motion.div>
+                
                 )}
 
                 {/* Next questions section */}
@@ -282,7 +335,7 @@ const QuestionForm = () => {
                             >
                                 {questions[currentQuestionIndex + 1]}
                             </label>
-                            <SpeechToTextInput 
+                            <SpeechToTextInput
                                 id={`question-${currentQuestionIndex + 1}`}
                                 placeholder="Type your answer here..."
                                 value={answers[questions[currentQuestionIndex + 1]] || ""}
@@ -321,11 +374,10 @@ const QuestionForm = () => {
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
-                                className={`px-6 py-3 w-full text-sm font-medium text-gray-900 rounded-lg transition-colors ${
-                                    isSubmitting
+                                className={`px-6 py-3 w-full text-sm font-medium text-gray-900 rounded-lg transition-colors ${isSubmitting
                                         ? "bg-gray-600 cursor-not-allowed"
                                         : "bg-green-500 hover:bg-green-600"
-                                }`}
+                                    }`}
                             >
                                 {isSubmitting ? "Submitting..." : "Submit"}
                             </motion.button>

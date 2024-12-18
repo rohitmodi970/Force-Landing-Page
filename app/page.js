@@ -10,10 +10,9 @@ import MainContent from "@/components/MainContent";
 import ModelViewer from "@/components/ModelViewer";
 import SpinalCordChakra from "@/components/Chakra";
 import CursorEffect from "@/components/CursorEffect";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import ScrollWave from "@/components/SVG";
 
-import Dictaphone from "@/components/SpeechRecognition";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -60,9 +59,10 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [iframeLoaded]);
-  //   // Hook to track mouse position
+
+  // Hook to track mouse position
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const updateMousePosition = (event) => {
@@ -76,8 +76,44 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        // Smooth scrolling for 3 seconds
+        let start = null;
+        const duration = 3000; // 3 seconds
+        const startPosition = window.scrollY;
+        const distance = -window.scrollY; // Scroll to the top
+  
+        const smoothScroll = (timestamp) => {
+          if (!start) start = timestamp;
+          const progress = timestamp - start;
+          const easeInOutCubic = (t) => t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2; // Ease function
+          const percentage = Math.min(progress / duration, 1); // Clamp between 0 and 1
+          const scrollTo = startPosition + distance * easeInOutCubic(percentage);
+          window.scrollTo(0, scrollTo);
+          if (progress < duration) {
+            requestAnimationFrame(smoothScroll); // Continue animation
+          }
+        };
+  
+        requestAnimationFrame(smoothScroll); // Start animation
+      }
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+  
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+
   const { x, y } = mousePosition;
-  const size = isHovered ? 400 : 40
+  const size = isHovered ? 400 : 40;
+
   return (
     <>
       {isLoading && (
@@ -92,11 +128,10 @@ export default function Home() {
       )}
       <div className="bg-black min-h-screen max-w-screen">
         <Navbar />
-        {/* <HeroSection /> */}
         <CursorEffect />
         <div className="min-h-[100vh] relative flex flex-col justify-center items-center">
           <motion.div
-            className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute  text-center"
+            className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute text-center"
             animate={{
               WebkitMaskPosition: `${x - size / 2}px ${y - size / 2}px`,
               WebkitMaskSize: `${size}px`
@@ -112,18 +147,19 @@ export default function Home() {
               maskSize: '40px'
             }}
           >
-            <p onMouseEnter={() => { setIsHovered(true) }} onMouseLeave={() => { setIsHovered(false) }}
+            <p
+              onMouseEnter={() => { setIsHovered(true); }}
+              onMouseLeave={() => { setIsHovered(false); }}
               style={{
-
                 color: 'var(--chakra-foundation);'
               }}
-              className=''
+              className=""
             >
               Force is your AI-powered companion for personal evolution, combining cutting-edge technology with deep human understanding. Through multimodal interaction and adaptive learning, Force helps you discover patterns, optimize daily experiences, and achieve sustainable personal growth.
             </p>
           </motion.div>
           <div className="font-bold text-6xl flex justify-center items-center">
-            <h1 className="text-orange-400 w-[35vw]">   What is FORCE ?</h1>
+            <h1 className="text-orange-400 w-[35vw]">What is FORCE?</h1>
           </div>
           <div className="flex flex-col justify-center items-center">
             <p className="text-white font-medium text-3xl justify-center text-center w-[70%] tracking-tighter mt-12 hover:text-orange-400">
@@ -139,23 +175,21 @@ export default function Home() {
         <Marquee />
         <div className="relative">
           <div className="absolute top-0 left-0 w-full h-full z-0">
-            {/* ModelViewer in the background */}
             <ModelViewer modelPath="/Termanation2.glb" />
           </div>
           <div className="relative z-10">
-            {/* QuestionForm on top */}
             <QuestionForm />
           </div>
         </div>
         <div className="h-screen bg-gradient-to-b from-black to-purple-500 flex flex-col justify-center">
           <h1 className="text-5xl semibold text-white text-center hover:text-orange-400">
-            Try FORCE Today !!!
+            Try FORCE Today!!!
           </h1>
           <div className="mt-60">
             <TextMarquee />
           </div>
           <div className="notified mt-20">
-            <form className="w-[40vw] mx-auto ">
+            <form className="w-[40vw] mx-auto">
               <div className="relative">
                 <div className="flex gap-7 justify-center items-center"></div>
                 <EmailForm />
@@ -163,12 +197,15 @@ export default function Home() {
             </form>
           </div>
         </div>
-        <CursorEffect/>
-        <ScrollWave/>
-
+        <CursorEffect />
+        <ScrollWave />
       </div>
-      {/* <Dictaphone /> */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-5 right-5 bg-orange-400 text-white p-3 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
+      >
+        ↑
+      </button>
     </>
   );
 }
-

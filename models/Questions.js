@@ -8,6 +8,7 @@ const QuestionsSchema = new mongoose.Schema(
             type: Object, // Changed from Map to Object
             required: true 
         },
+        files: { type: [String] }, // Array of file paths
     },
     { timestamps: true }
 );

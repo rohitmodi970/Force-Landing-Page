@@ -2,97 +2,94 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiArrowLongRight } from "react-icons/hi2";
-// import { motion } from "framer-motion"; // Import Framer Motion
+import { HiArrowLongRight } from 'react-icons/hi2';
+
 const CursorEffect = () => {
   const media = [
-    "/pics/11.jpg",
-    "/pics/12.jpg",
-    "/pics/13.jpg",
-    "/pics/14.jpg",
-    "/pics/15.jpg",
-    "/pics/02.mp4",
-    "/pics/01.mp4",
-    "/pics/03.mp4",
+    '/pics/11.jpg',
+    '/pics/12.jpg',
+    '/pics/13.jpg',
+    '/pics/14.jpg',
+    '/pics/15.jpg',
   ];
 
-  const [index, setIndex] = useState(0); // Current index of media
+  const [index, setIndex] = useState(0);
 
+  // Auto-change interval
   useEffect(() => {
     const interval = setInterval(() => {
-      // Update the index to show the next media item, looping back to the start
       setIndex((prevIndex) => (prevIndex + 1) % media.length);
-    }, 15000); // Change media every 5 seconds
+    }, 4000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
   }, [media.length]);
 
+  // Sliding media variants
   const variants = {
-    enter: { opacity: 0, x: 50 }, // Initial position and transparency
-    center: { opacity: 1, x: 0, transition: { duration: 0.5 } }, // Animate to center
-    exit: { opacity: 0, x: -50, transition: { duration: 0.5 } }, // Exit to the left
+    initial: { opacity: 0, scale: 1.2 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 200,
+        damping: 20,
+        duration: 1.5,
+      },
+    },
+    exit: {
+      opacity: 0,
+      scale: 1.2,
+      transition: {
+        type: 'spring',
+        stiffness: 200,
+        damping: 20,
+      },
+    },
   };
 
-  // Hook to track mouse position
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    const updateMousePosition = (event) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
-
-    window.addEventListener('mousemove', updateMousePosition);
-
-    return () => {
-      window.removeEventListener('mousemove', updateMousePosition);
-    };
-  }, []);
-  // New animation for the FORCE text (enter, stay, exit)
-const forceTextVariants = {
-  initial: { opacity: 0, scale: 0.5 },
-  animate: {
-    opacity: [0, 1, 1, 0], // Enter, stay, exit
-    scale: [0.5, 1.2, 1.2, 0.5], // Scale up, stay, scale down
-    transition: {
-      duration: 4, // Total cycle duration (enter, stay, exit)
-      ease: "easeInOut",
-      repeat: Infinity, // Loop infinitely
-      repeatType: "loop", // Repeat in a loop
-      times: [0, 0.2, 0.8, 1], // Adjust timing for entering, staying, and exiting
-    },
-  },
-};
-
   const letters = [
-      { char: "F" },
-      { char: "O" },
-      { char: "R" },
-      { char: "C" },
-      { char: "E" },
-    ];
+    { char: 'F' },
+    { char: 'O' },
+    { char: 'R' },
+    { char: 'C' },
+    { char: 'E' },
+  ];
 
-  const { x, y } = mousePosition;
-  const size = isHovered ? 200 : 40;
+  const forceTextVariants = {
+    initial: { opacity: 0, scale: 0.5 },
+    animate: {
+      opacity: [0, 1, 1, 0],
+      scale: [0.5, 1.2, 1.2, 0.5],
+      transition: {
+        duration: 4,
+        ease: 'easeInOut',
+        repeat: Infinity,
+        repeatType: 'loop',
+        times: [0, 0.2, 0.8, 1],
+      },
+    },
+  };
 
   const renderMedia = (mediaItem) => {
     const isVideo = mediaItem.endsWith('.mp4');
+    const commonProps = {
+      variants: variants,
+      initial: 'initial',
+      animate: 'animate',
+      exit: 'exit',
+      className: `${isVideo ? 'w-auto h-auto' : 'w-full h-full object-cover'}`,
+    };
 
     if (isVideo) {
       return (
         <motion.video
           key={mediaItem}
+          {...commonProps}
           src={mediaItem}
           autoPlay
           loop
           muted
-          className="w-fit h-auto"
-          variants={variants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         />
       );
     }
@@ -100,76 +97,49 @@ const forceTextVariants = {
     return (
       <motion.img
         key={mediaItem}
+        {...commonProps}
         src={mediaItem}
         alt="Display"
-        className="w-full h-auto"
-        variants={variants}
-        initial="enter"
-        animate="center"
-        exit="exit"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       />
     );
   };
 
   return (
-    <div className="main h-[100vh] bg-black flex flex-col items-center justify-center">
-      <motion.div
-        className="first mask h-[100%] w-[100%] flex items-center justify-center bg-white overflow-hidden cursor-none absolute"
-        animate={{
-          WebkitMaskPosition: `${x - size / 2}px ${y - size / 2}px`,
-          WebkitMaskSize: `${size}px`,
-        }}
-        transition={{
-          type: "tween",
-          ease: "backOut",
-        }}
-      >
-        {/* First media */}
-        <AnimatePresence mode="wait">
-          {renderMedia(media[index])}
-        </AnimatePresence>
-      </motion.div>
-      <div className="second body h-[100%] w-[100%] flex items-center justify-center bg-black overflow-hidden">
-        {/* Second media */}
-        <AnimatePresence mode="wait">
-          {renderMedia(media[(index + 1) % media.length])}
-        </AnimatePresence>
+    <div className="main h-screen bg-black flex flex-col items-center justify-center relative">
+      <AnimatePresence mode="wait">
+        {renderMedia(media[index])}
+      </AnimatePresence>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
+        <div className="flex justify-center gap-2">
+          {letters.map((letter, i) => (
+            <motion.div
+              key={i}
+              className="text-9xl font-extrabold text-red-500"
+              initial="initial"
+              animate="animate"
+              variants={forceTextVariants}
+              transition={{
+                duration: 4,
+                delay: i * 0.2,
+              }}
+            >
+              {letter.char}
+            </motion.div>
+          ))}
+        </div>
+        <p className="font-semibold text-xl mt-4">
+          Discover your Force: Where human potential meets AI-powered evolution
+        </p>
+        <button className="mt-5 px-9 py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-medium flex items-center justify-center gap-3 shadow-md transition">
+          <span>Learn More</span>
+          <HiArrowLongRight />
+        </button>
       </div>
-      <div className="absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 text-black bg-transparent w-[20vw] ml-[15vw]">
-            <div className="flex justify-center gap-2 pl-30">
-              {letters.map((letter, index) => (
-                <motion.div
-                  key={index}
-                  className="text-9xl font-extrabold text-chakra-foundation"
-                  initial="initial"
-                  animate="animate"
-                  variants={forceTextVariants}
-                  transition={{
-                    duration: 4, // Total duration for each cycle
-                    delay: index * 0.2, // Stagger delay for each letter's entry
-                  }}
-                >
-                  {letter.char}
-                </motion.div>
-              ))}
-            </div>
-            <p className="font-semibold translate-x-1/5 text-center text-2xl text-wrap text-white mt-4">
-            Discover your Force: Where human potential meets AI-powered evolution
-            </p>
-            <button className="absolute right-[20%] px-9 py-2 rounded-full bg-chakra-foundation text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-3">
-              <span>Learn more!</span>
-              <HiArrowLongRight />
-            </button>
-          </div>
     </div>
   );
 };
 
 export default CursorEffect;
-
-
 
 
 
