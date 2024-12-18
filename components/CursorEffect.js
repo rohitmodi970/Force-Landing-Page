@@ -6,11 +6,14 @@ import { HiArrowLongRight } from 'react-icons/hi2';
 
 const CursorEffect = () => {
   const media = [
-    '/pics/11.jpg',
-    '/pics/12.jpg',
-    '/pics/13.jpg',
-    '/pics/14.jpg',
-    '/pics/15.jpg',
+    "/pics/11.png",
+    "/pics/12.png",
+    "/pics/13.png",
+    "/pics/14.png",
+    "/pics/15.png",
+    "/pics/02.mp4",
+    "/pics/01.mp4",
+    "/pics/03.mp4",
   ];
 
   const [index, setIndex] = useState(0);
@@ -159,8 +162,8 @@ export default CursorEffect;
 
 // const CursorEffect = () => {
 //   const images = [
-//     "/pics/11.jpg",
-//     "/pics/12.jpg",
+//     "/pics/11.png",
+//     "/pics/12.png",
 //     "/pics/13.jpg",
 //     "/pics/14.jpg",
 //     "/pics/15.jpg",
