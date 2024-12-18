@@ -1,9 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ScrollWave = () => {
-  const [wavePaths, setWavePaths] = useState([]); // Store paths for each part
-  const [visibleFeatures, setVisibleFeatures] = useState([]); // Track visibility of each feature card
-  const [svgWidth, setSvgWidth] = useState(800); // Default SVG width
+  const [wavePaths, setWavePaths] = useState([]); 
+  const [featuresVisibility, setFeaturesVisibility] = useState(
+    new Array(7).fill(false)
+  );
+  const [svgWidth, setSvgWidth] = useState(800);
   const containerRef = useRef(null);
 
   // Function to generate smooth sinusoidal wave paths
@@ -43,7 +46,6 @@ const ScrollWave = () => {
     }
     return paths;
   };
-  
 
   useEffect(() => {
     // Update SVG width on mount
@@ -72,11 +74,15 @@ const ScrollWave = () => {
       const newPaths = generateWavePaths(delayedProgress);
       setWavePaths(newPaths);
 
-      // Determine which feature cards to show
-      const visibility = colors.map((_, index) =>
-        delayedProgress > index / colors.length
-      );
-      setVisibleFeatures(visibility);
+      // Adjusted feature visibility calculation
+      const newFeaturesVisibility = features.map((_, index) => {
+        const featureShowThreshold = (index + 2) / (features.length + 1);
+        const featureHideThreshold = delayedProgress > 0.9;
+        
+        return (delayedProgress >= featureShowThreshold) && !featureHideThreshold;
+      });
+
+      setFeaturesVisibility(newFeaturesVisibility);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -86,8 +92,8 @@ const ScrollWave = () => {
   }, [svgWidth]);
 
   const colors = [
-    "#000000",
-    "#000000",
+    "#ffffff",
+    "#ffffff",
     "#ff5733",
     "#33c9ff",
     "#9b59b6",
@@ -96,6 +102,7 @@ const ScrollWave = () => {
     "#33ff57",
     "#ff33a8",
   ];
+
   const features = [
     "Feature 1: Dynamic scrolling wave.",
     "Feature 2: High amplitude transitions.",
@@ -109,14 +116,14 @@ const ScrollWave = () => {
   return (
     <div
       ref={containerRef}
-      className="w-full min-h-[200vh] flex flex-col items-center relative mt-48"
+      className="w-full min-h-[200vh] flex flex-col items-center relative mt-12 mb-64"
     >
       {/* EM Wave SVG */}
       <div className="sticky top-[20vh] w-full z-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox={`0 0 ${svgWidth} 300`}
-          className="w-full h-[300px]"
+          className="w-full h-[400px]"
         >
           {/* Glow filter for EM effect */}
           <defs>
@@ -144,26 +151,47 @@ const ScrollWave = () => {
         </svg>
       </div>
 
-      {/* Feature Cards */}
-      <div className="w-full z-30 fixed bottom-8 flex flex-row items-center gap-4 mt-16">
-        {features.map((feature, index) => (
-          <div
-            key={index}
-            className={`feature-card w-64 p-4 bg-white shadow-lg rounded-lg text-center transition-opacity duration-500 ${
-              visibleFeatures[index + 2] ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundColor: `${colors[(index + 2) % colors.length]}50`,
-              borderLeft: `4px solid ${colors[(index + 2) % colors.length]}`,
-              borderRight: `4px solid ${colors[(index + 2) % colors.length]}`,
-            }}
-          >
-            <h3 className="text-lg font-bold" style={{ color: "white" }}>
-              Part {index + 1}
-            </h3>
-            <p className="text-sm text-white">{feature}</p>
-          </div>
-        ))}
+      {/* Feature Cards Container */}
+      <div className="fixed bottom-8 left-0 right-0 z-30 flex justify-center space-x-4">
+        <AnimatePresence>
+          {features.map((feature, index) => (
+            featuresVisibility[index] && (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 20 
+                }}
+                className="w-64 p-5 bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl border-l-4 transform transition-all duration-300 ease-in-out"
+                style={{
+                  borderLeftColor: colors[(index + 2) % colors.length],
+                  backgroundColor: `${colors[(index + 2) % colors.length]}20`,
+                }}
+              >
+                <motion.h3 
+                  className="text-xl font-bold mb-2 text-gray-800"
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  Part {index + 1}
+                </motion.h3>
+                <motion.p
+                  className="text-sm text-gray-600"
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  {feature}
+                </motion.p>
+              </motion.div>
+            )
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

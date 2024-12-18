@@ -59,10 +59,10 @@ const Navbar = () => {
 
       {/* Navigation Links */}
       <div className="links text-white flex gap-8 justify-center items-center">
-        {["Home", "about", "contact"].map((value, index) => (
+        {["Home", "manifesto", "contact"].map((value, index) => (
           <div
             key={index}
-            className="text-[#FFFFFF] font-medium capitalize z-10 cursor-pointer hover:text-orange-400 hover:font-semibold"
+            className="text-black font-medium capitalize z-10 cursor-pointer hover:text-orange-400 hover:font-semibold"
           >
             {value}
           </div>
