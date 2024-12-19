@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const slides = [
   {
@@ -42,138 +40,76 @@ const slides = [
   }
 ];
 
+const MediaComponent = ({ slide, isVisible }) => {
+  return (
+    <div
+      className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`}
+      style={{
+        backgroundImage: `url(${slide.image})`,
+        filter: 'brightness(0.6)',
+      }}
+    />
+  );
+};
+
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Auto-play functionality
   useEffect(() => {
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3000); // Slide changes every 3 seconds.
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
 
-  const nextSlide = () => {
-    setIsAutoPlaying(false); // Pause auto-play on manual interaction.
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setIsAutoPlaying(false); // Pause auto-play on manual interaction.
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  // Media component with improved crossfade transition
-  const MediaComponent = ({ slide, isVisible }) => {
-    if (slide.type === "video") {
-      return (
-        <motion.video
-          key={slide.videoUrl}
-          className="absolute inset-0 w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isVisible ? 1 : 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <source src={slide.videoUrl} type="video/mp4" />
-        </motion.video>
-      );
-    }
-    return (
-      <motion.div
-        key={slide.image}
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${slide.image})`,
-          filter: 'brightness(0.6)',
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isVisible ? 1 : 0 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.7 }}
-      />
-    );
-  };
+ 
 
   return (
     <div className="relative h-screen bg-black text-white overflow-hidden">
-      {/* Background Media with Crossfade */}
-      <AnimatePresence mode="wait">
-        {slides.map((slide, index) => (
-          <MediaComponent
-            key={index}
-            slide={slide}
-            isVisible={index === currentSlide}
-          />
-        ))}
-      </AnimatePresence>
+      {/* Background Media */}
+      {slides.map((slide, index) => (
+        <MediaComponent
+          key={index}
+          slide={slide}
+          isVisible={index === currentSlide}
+        />
+      ))}
 
       {/* Content */}
       <div className="relative h-full flex items-center">
         <div className="container mx-auto px-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="max-w-4xl"
-            >
-              {/* Title */}
-              <h1 className="text-6xl font-bold mb-8">
-                <motion.span
-                  className="block"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {slides[currentSlide].title[0]}
-                </motion.span>
-                <motion.span
-                  className="block"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  {slides[currentSlide].title[1]}
-                </motion.span>
-              </h1>
+          <div className="max-w-4xl transition-all duration-500 transform">
+            {/* Title */}
+            <h1 className="text-6xl font-bold mb-8">
+              <span className="block transition-all duration-500 transform">
+                {slides[currentSlide].title[0]}
+              </span>
+              <span className="block transition-all duration-500 transform">
+                {slides[currentSlide].title[1]}
+              </span>
+            </h1>
 
-              {/* Creator Info */}
-              <motion.div
-                className="flex items-center space-x-4 mt-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-              >
-                <div>
-                  <h3 className="text-xl font-semibold">
-                    {slides[currentSlide].creator}
-                  </h3>
-                  <p className="text-gray-300">{slides[currentSlide].description}</p>
-                </div>
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
+            {/* Creator Info */}
+            <div className="flex items-center space-x-4 mt-8">
+              <div>
+                <h3 className="text-xl font-semibold">
+                  {slides[currentSlide].creator}
+                </h3>
+                <p className="text-gray-300">{slides[currentSlide].description}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scroll Down Arrow */}
-      <motion.button
-        animate={{ y: [0, 10, 0] }}
-        transition={{ repeat: Infinity, duration: 2 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        aria-label="Scroll down"
-      >
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 78 77"
@@ -184,7 +120,7 @@ export default function HeroSection() {
             d="M43.5 0v59.244l27.34-26.955 6.319 6.408-35 34.507L39 76.319l-3.16-3.115-35-34.507 6.319-6.408L34.5 59.244V0h9z"
           />
         </svg>
-      </motion.button>
+      </div>
     </div>
   );
 }
