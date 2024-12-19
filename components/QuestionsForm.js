@@ -1,12 +1,13 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SpeechToTextInput from "./SpeechRecognition";
 import PhotoCard from "./PhotoCard";
-
+import { useFormStatus } from "react-dom";
+import { uploadPhoto } from "@/app/api/user-action/route";
 
 const QuestionForm = () => {
     const [userDetails, setUserDetails] = useState({ name: "", email: "" });
-    const [currentStep, setCurrentStep] = useState(1); // 0: User Details, 1: Questions, 2: Submission
+    const [currentStep, setCurrentStep] = useState(0); // 0: User Details, 1: Questions, 2: Submission
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,6 +15,7 @@ const QuestionForm = () => {
     const [showCardNext, setShowCardNext] = useState(false)
     const [handleButton, sethandleButton] = useState(true)
     const [files, setFiles] = useState({}); // Store files for each question
+    const { pending } = useFormStatus()
     const questions = [
         "Write down the top 5 feelings you have while you are with your closest friend?",
         "Imagine making a perfect workout routine for yourself...",
@@ -48,20 +50,32 @@ const QuestionForm = () => {
         setAnswers(updatedAnswers);
         console.log(answers)
     };
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            setFiles((prevFiles) => ({
-                ...prevFiles,
-                [questions[currentQuestionIndex]]: selectedFile,
-            }));
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+    
+        // Basic frontend validation
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload an image file');
+            e.target.value = '';
+            return;
         }
-        console.log(selectedFile)
+    
+        if (file.size > 1024 * 1024) {
+            alert('File size must be less than 1MB');
+            e.target.value = '';
+            return;
+        }
+    
+        setFiles((prevFiles) => ({
+            ...prevFiles,
+            [questions[currentQuestionIndex]]: file,
+        }));
     };
     const handleNext = () => {
         const currentAnswer = answers[questions[currentQuestionIndex]]?.trim();
         const currentFile = files[questions[currentQuestionIndex]];
-    
+
         if (currentAnswer) {
             if (!currentFile) {
                 alert("Please upload an image for this question.");
@@ -80,38 +94,64 @@ const QuestionForm = () => {
     const handleSubmit = async () => {
         if (isSubmitting) return;
     
-        const formData = new FormData();
-        formData.append("name", userDetails.name);
-        formData.append("email", userDetails.email);
-        formData.append("responses", JSON.stringify(answers));
-    
-        // Append files to the form data
-        Object.keys(files).forEach((question, index) => {
-            formData.append(`file_${index}`, files[question]);
-        });
-    
         try {
             setIsSubmitting(true);
+            
+            // Create FormData and add basic fields
+            const formData = new FormData();
+            formData.append("name", userDetails.name);
+            formData.append("email", userDetails.email);
+            
+            // Convert answers object to a structure that includes the question text
+            const formattedResponses = {};
+            questions.forEach((question, index) => {
+                if (answers[question]) {
+                    formattedResponses[index] = answers[question];
+                }
+            });
+            
+            // Debug log
+            console.log("Formatted responses:", formattedResponses);
+            formData.append("responses", JSON.stringify(formattedResponses));
+    
+            // Append files with proper keys
+            Object.entries(files).forEach(([question, file]) => {
+                const questionIndex = questions.indexOf(question);
+                if (questionIndex !== -1) {
+                    console.log(`Appending file for question ${questionIndex}:`, file.name);
+                    formData.append(`file_${questionIndex}`, file);
+                }
+            });
+    
+            // Debug log all form data
+            for (let [key, value] of formData.entries()) {
+                console.log(`Form data - ${key}:`, value instanceof File ? value.name : value);
+            }
+    
             const response = await fetch("/api/user-action", {
                 method: "POST",
                 body: formData,
             });
     
-            if (response.ok) {
-                alert("Thank you for submitting your responses!");
-                handleRestart();
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Submission failed");
+            const result = await response.json();
+            console.log("Server response:", result);
+    
+            if (!response.ok) {
+                throw new Error(result.error || "Submission failed");
             }
+    
+            alert("Thank you for submitting your responses!");
+            handleRestart();
+    
         } catch (error) {
             console.error("Error submitting form:", error);
-            alert("Failed to submit form. Please try again.");
+            alert(`Failed to submit form: ${error.message}`);
         } finally {
             setIsSubmitting(false);
+            setFiles({});
         }
     };
-    
+
     const fonts = [
         "'Lobster', cursive",
         "'Poppins', sans-serif",
@@ -166,23 +206,25 @@ const QuestionForm = () => {
     };
 
     const buttonHover = { scale: 1.1 };
-const formRef = useRef()
-const handleDelete = async (index) => {
-    const newFiles = Object.keys(files)
-        .filter((_, i) => i !== index)
-        .reduce((obj, key) => {
-            obj[key] = files[key];
-            return obj;
-        }, {});
-    setFiles(newFiles);
-}
+    const formRef = useRef()
+    const handleDelete = async (index) => {
+        const newFiles = Object.keys(files)
+            .filter((_, i) => i !== index)
+            .reduce((obj, key) => {
+                obj[key] = files[key];
+                return obj;
+            }, {});
+        setFiles(newFiles);
+    }
+    
+
     return (
-        <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative">
+        <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative bg-gradient-to-b from-black via-white to-black">
             <div className="flex flex-col justify-center items-center">
                 {handleButton ? (
                     <button
                         onClick={() => sethandleButton(false)}
-                        className="px-12 py-5 rounded-full bg-chakra-insight text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-white hover:text-indigo-400 hover:scale-125 z-10 transition-transform duration-1000"
+                        className="px-12 py-5 rounded-full bg-chakra-insight text-white text-xl mt-5 text-nowrap flex items-center justify-center gap-5 hover:bg-[#ECC94B] hover:text-indigo-400 hover:scale-125 z-10 transition-transform duration-1000"
                     >
                         Answer & Discover
                     </button>
@@ -222,7 +264,7 @@ const handleDelete = async (index) => {
 
                 {/* Previous questions section */}
                 {showCard && (
-                    <div className="absolute w-[30vw] left-[18vw] text-white">
+                    <div className="absolute w-[30vw] left-[18vw] text-white pointer-events-none" >
                         <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10">
                             <label
                                 htmlFor={`question-${currentQuestionIndex - 1}`}
@@ -251,83 +293,84 @@ const handleDelete = async (index) => {
 
                 {currentStep === 1 && (
                     <motion.div
-                    key={currentQuestionIndex}
-                    variants={cardTransition}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    transition={{ duration: 0.6 }}
-                    className="relative z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-xl mx-auto p-8 opacity-95"
-                >
-                    <label
-                        htmlFor={`question-${currentQuestionIndex}`}
-                        className="block text-2xl font-bold text-white mb-6"
-                        style={{ fontFamily: randomFont }}
+                        key={currentQuestionIndex}
+                        variants={cardTransition}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        transition={{ duration: 0.6 }}
+                        className="relative z-40 w-full max-w-lg bg-orange-400 rounded-2xl shadow-xl mx-auto p-8 opacity-95"
                     >
-                        {questions[currentQuestionIndex]}
-                    </label>
-                
-                    <SpeechToTextInput
-                        id={`question-${currentQuestionIndex}`}
-                        placeholder="Type or speak your answer here..."
-                        value={answers[questions[currentQuestionIndex]] || ""}
-                        onTranscriptChange={handleInputChange}
-                        className="w-full px-4 py-2 text-black bg-white rounded-lg mb-4 focus:ring-2 focus:ring-orange-300"
-                    />
-                
-                    {/* <input
+                        <label
+                            htmlFor={`question-${currentQuestionIndex}`}
+                            className="block text-2xl font-bold text-white mb-6"
+                            style={{ fontFamily: randomFont }}
+                        >
+                            {questions[currentQuestionIndex]}
+                        </label>
+
+                        <SpeechToTextInput
+                            id={`question-${currentQuestionIndex}`}
+                            placeholder="Type or speak your answer here..."
+                            value={answers[questions[currentQuestionIndex]] || ""}
+                            onTranscriptChange={handleInputChange}
+                            className="w-full px-4 py-2 text-black bg-white rounded-lg mb-4 focus:ring-2 focus:ring-orange-300"
+                        />
+
+                        {/* <input
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
                         className="w-full text-sm file:px-4 file:py-2 file:border-0 file:rounded-lg file:bg-white file:text-black file:cursor-pointer mb-4"
                     /> */}
-                    <form action="" ref={formRef}>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="w-full text-sm file:px-4 file:py-2 file:border-0 file:rounded-lg file:bg-white file:text-black file:cursor-pointer mb-4"
-                    />
-                    <h5 className="text-red-500">(*) Only accept image files less than 1mb in size. Upto 1 photos</h5>
-                    {/* Preview Images */}
-                    <div  className="">
-                        {
-                            Object.values(files).map((file, index) => (
-                                <PhotoCard key={index} url = {URL.createObjectURL(file)} onClick={()=>handleDelete(index)}/>
-                            ))
-                        }
-                    </div>
-                    </form>
-                
-                    <motion.button
-                        onClick={handleNext}
-                        whileTap={{ scale: 0.95 }}
-                        whileHover={ { scale: 1.05 }}
-                        disabled={!answers[questions[currentQuestionIndex]?.trim() ]}
-                        className={`w-full px-4 py-3 rounded-xl transition-all text-white font-semibold ${
-                            answers[questions[currentQuestionIndex]?.trim()]
-                                ? "bg-white/40 hover:bg-white/50"
-                                : "bg-white/10 cursor-not-allowed"
-                        }`}
-                    >
-                        {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
-                    </motion.button>
-                
-                    <div className="mt-6 w-full bg-white/20 rounded-full h-2.5">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-                            transition={{ duration: 0.5 }}
-                            className="bg-white h-2.5 rounded-full"
-                        />
-                    </div>
-                </motion.div>
-                
+                        <form action="" ref={formRef}>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="w-full text-sm file:px-4 file:py-2 file:border-0 file:rounded-lg file:bg-white file:text-black file:cursor-pointer mb-4"
+                            />
+                            <h5 className="text-red-500">(*) Only accept image files less than 1mb in size. Upto 1 photos</h5>
+                            {/* Preview Images */}
+                            <div className="">
+                                {files[questions[currentQuestionIndex]] && (
+                                    <PhotoCard
+                                        url={URL.createObjectURL(files[questions[currentQuestionIndex]])}
+                                        onClick={() => handleDelete(currentQuestionIndex)}
+                                    />
+                                )}
+                            </div>
+                        </form>
+
+                        <motion.button
+                            onClick={handleNext}
+                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.05 }}
+                            disabled={!answers[questions[currentQuestionIndex]?.trim()]}
+                            className={`w-full px-4 py-3 rounded-xl transition-all text-white font-semibold ${answers[questions[currentQuestionIndex]?.trim()]
+                                    ? "bg-white/40 hover:bg-white/50"
+                                    : "bg-white/10 cursor-not-allowed"
+                                }`}
+                        >
+
+                            {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
+                        </motion.button>
+
+                        <div className="mt-6 w-full bg-white/20 rounded-full h-2.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                                transition={{ duration: 0.5 }}
+                                className="bg-white h-2.5 rounded-full"
+                            />
+                        </div>
+                    </motion.div>
+
                 )}
 
                 {/* Next questions section */}
                 {(showCardNext && (currentQuestionIndex <= questions.length - 1)) && (
-                    <div className="absolute w-[30vw] right-[18vw]">
+                    <div className="absolute w-[30vw] right-[18vw]  pointer-events-none">
                         <div className="bg-orange-400 rounded-2xl p-6 mx-auto opacity-50 -z-10">
                             <label
                                 htmlFor={`question-${currentQuestionIndex + 1}`}
@@ -375,10 +418,11 @@ const handleDelete = async (index) => {
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
                                 className={`px-6 py-3 w-full text-sm font-medium text-gray-900 rounded-lg transition-colors ${isSubmitting
-                                        ? "bg-gray-600 cursor-not-allowed"
-                                        : "bg-green-500 hover:bg-green-600"
+                                    ? "bg-gray-600 cursor-not-allowed"
+                                    : "bg-green-500 hover:bg-green-600"
                                     }`}
                             >
+                                {/* {pending ? 'Loading...' : (isSubmitting ? "Submitting..." : "Submit")} */}
                                 {isSubmitting ? "Submitting..." : "Submit"}
                             </motion.button>
                             <motion.button

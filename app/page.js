@@ -129,7 +129,7 @@ export default function Home() {
       <div className="bg-white min-h-screen max-w-screen">
         <Navbar />
         <CursorEffect />
-        <div className="min-h-[100vh] relative flex flex-col bg-gradient-to-b from-white/50 to-white justify-center items-center">
+        <div className="min-h-[100vh] relative flex flex-col bg-gradient-to-b mt-10 from-white/50 to-white justify-center items-center">
           <motion.div
             className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute text-center"
             animate={{
@@ -180,11 +180,11 @@ export default function Home() {
         <ScrollWave/>
         <MainContent />
         <Marquee />
-        <div className="relative">
-          <div className="absolute top-0 left-0 w-full h-full z-0">
+        <div className="relative min-h-screen">
+          {/* <div className="absolute top-0 left-0 w-full h-full z-0">
             <ModelViewer modelPath="/Termanation2.glb" />
-          </div>
-          <div className="relative z-10">
+          </div> */}
+          <div className="relative z-10 ">
             <QuestionForm />
           </div>
         </div>
