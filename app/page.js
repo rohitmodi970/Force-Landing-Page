@@ -180,9 +180,9 @@ export default function Home() {
         <MainContent />
         <Marquee />
         <div className="relative min-h-screen">
-          {/* <div className="absolute top-0 left-0 w-full h-full z-0">
-            <ModelViewer modelPath="/Termanation2.glb" />
-          </div> */}
+          <div className="absolute top-0 left-0 w-full h-full z-0">
+            <ModelViewer />
+          </div>
           <div className="relative z-10 ">
             <QuestionForm />
           </div>
