@@ -22,31 +22,31 @@ const CursorEffect = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % media.length);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [media.length]);
 
-  // Sliding media variants
-  const variants = {
-    initial: { opacity: 0, scale: 1.2 },
+  // Media animation variants
+  const mediaVariants = {
+    initial: { opacity: 0, scale: 1.3 },
     animate: {
       opacity: 1,
       scale: 1,
       transition: {
         type: 'spring',
-        stiffness: 200,
-        damping: 20,
+        stiffness: 150,
+        damping: 25,
         duration: 1.5,
       },
     },
     exit: {
       opacity: 0,
-      scale: 1.2,
+      scale: 1.3,
       transition: {
         type: 'spring',
-        stiffness: 200,
-        damping: 20,
+        stiffness: 150,
+        damping: 25,
       },
     },
   };
@@ -60,16 +60,17 @@ const CursorEffect = () => {
   ];
 
   const forceTextVariants = {
-    initial: { opacity: 0, scale: 0.5 },
+    initial: { opacity: 0, y: 50 },
     animate: {
       opacity: [0, 1, 1, 0],
-      scale: [0.5, 1.2, 1.2, 0.5],
+      y: [50, 0, 0, 50],
+      scale: [0.8, 1.2, 1.2, 0.8],
       transition: {
         duration: 4,
         ease: 'easeInOut',
         repeat: Infinity,
         repeatType: 'loop',
-        times: [0, 0.2, 0.8, 1],
+        times: [0, 0.3, 0.7, 1],
       },
     },
   };
@@ -77,11 +78,11 @@ const CursorEffect = () => {
   const renderMedia = (mediaItem) => {
     const isVideo = mediaItem.endsWith('.mp4');
     const commonProps = {
-      variants: variants,
+      variants: mediaVariants,
       initial: 'initial',
       animate: 'animate',
       exit: 'exit',
-      className: `${isVideo ? 'w-auto h-auto' : 'w-full h-full object-cover'}`,
+      className: `${isVideo ? 'w-auto h-auto max-h-screen' : 'w-full h-full object-cover rounded-lg shadow-xl'}`,
     };
 
     if (isVideo) {
@@ -108,16 +109,21 @@ const CursorEffect = () => {
   };
 
   return (
-    <div className="main h-screen bg-black flex flex-col items-center justify-center relative">
+    <div className="main h-screen bg-gradient-to-b from-black via-gray-900 to-black flex flex-col items-center justify-center relative overflow-hidden">
       <AnimatePresence mode="wait">
         {renderMedia(media[index])}
       </AnimatePresence>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
-        <div className="flex justify-center gap-2">
+
+      {/* Overlay for Gradient Effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black"></div>
+
+      {/* Text and Button Content */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white px-4">
+        <div className="flex justify-center gap-3 mb-4">
           {letters.map((letter, i) => (
             <motion.div
               key={i}
-              className="text-9xl font-extrabold text-red-500"
+              className="text-9xl font-extrabold text-gradient bg-clip-text   text-red-500 "
               initial="initial"
               animate="animate"
               variants={forceTextVariants}
@@ -130,12 +136,14 @@ const CursorEffect = () => {
             </motion.div>
           ))}
         </div>
-        <p className="font-semibold text-xl mt-4">
-          Discover your Force: Where human potential meets AI-powered evolution
+
+        <p className="font-medium text-2xl md:text-3xl leading-snug max-w-3xl mx-auto">
+          Unlock your potential: Harness AI-driven insights to transform your future.
         </p>
-        <button className="mt-5 px-9 py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-medium flex items-center justify-center gap-3 shadow-md transition">
+
+        <button className="mt-8 px-10 py-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-purple-500 hover:to-blue-500 text-white text-lg font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105">
           <span>Learn More</span>
-          <HiArrowLongRight />
+          <HiArrowLongRight size={24} />
         </button>
       </div>
     </div>
@@ -143,6 +151,7 @@ const CursorEffect = () => {
 };
 
 export default CursorEffect;
+
 
 
 

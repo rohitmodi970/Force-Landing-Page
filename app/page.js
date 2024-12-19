@@ -12,7 +12,6 @@ import SpinalCordChakra from "@/components/Chakra";
 import CursorEffect from "@/components/CursorEffect";
 import { motion } from 'framer-motion';
 import ScrollWave from "@/components/SVG";
-
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -128,7 +127,7 @@ export default function Home() {
       )}
       <div className="bg-white min-h-screen max-w-screen">
         <Navbar />
-        <CursorEffect />
+        <HeroSection />
         <div className="min-h-[100vh] relative flex flex-col bg-gradient-to-b mt-10 from-white/50 to-white justify-center items-center">
           <motion.div
             className="mask h-[100%] w-[100%] flex items-center justify-center text-orange-400 text-4xl leading-[40px] cursor-default absolute text-center"
