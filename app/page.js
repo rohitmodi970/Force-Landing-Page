@@ -12,6 +12,7 @@ import SpinalCordChakra from "@/components/Chakra";
 import CursorEffect from "@/components/CursorEffect";
 import { motion } from 'framer-motion';
 import ScrollWave from "@/components/SVG";
+import DiaryEntryPage from "@/components/EntryPage";
 // Reusable Hook for Cycling Words
 const useWordCycle = (wordsArray, intervalTime) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -115,6 +116,10 @@ export default function Home() {
 
   return (
     <>
+    <div className="relative">
+
+    <DiaryEntryPage/>
+    </div>
       {isLoading && (
         <div className="fixed inset-0 flex justify-center items-center bg-black z-50">
           <video
