@@ -219,7 +219,7 @@ const QuestionForm = () => {
     
 
     return (
-        <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative bg-gradient-to-b from-black via-white to-black">
+        <div className="min-h-screen bg-transparent flex items-center justify-center p-4 overflow-hidden relative ">
             <div className="flex flex-col justify-center items-center">
                 {handleButton ? (
                     <button
