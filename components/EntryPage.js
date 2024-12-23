@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import * as THREE from 'three';
-import { Eraser, Pencil, Trash2 } from 'lucide-react';
+import { Eraser, Pen,Pencil, Trash2 } from 'lucide-react';
 
 const DiaryEntryPage = () => {
   const canvasRef = useRef(null);
   const cursorRef = useRef(null);
-  const particlesRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const contextRef = useRef(null);
@@ -15,89 +13,44 @@ const DiaryEntryPage = () => {
   const [currentTool, setCurrentTool] = useState('pen');
   const [guideLines, setGuideLines] = useState([]);
 
+  // Calculate guide lines on window resize
   useEffect(() => {
-    // Calculate guide lines based on window height
-    const lineCount = Math.floor(window.innerHeight / 24);
-    setGuideLines(Array.from({ length: lineCount }, (_, i) => i));
-    
-    const handleResize = () => {
-      const newLineCount = Math.floor(window.innerHeight / 24);
-      setGuideLines(Array.from({ length: newLineCount }, (_, i) => i));
+    const calculateLines = () => {
+      const lineCount = Math.floor(window.innerHeight / 24);
+      setGuideLines(Array.from({ length: lineCount }, (_, i) => i));
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    calculateLines();
+    window.addEventListener('resize', calculateLines);
+    return () => window.removeEventListener('resize', calculateLines);
   }, []);
 
-  // Initialize Three.js scene for particles
+  // Initialize canvas with proper scaling
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const particles = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0);
-    particlesRef.current?.appendChild(renderer.domElement);
-    
-    // Create particle system
-    const particleGeometry = new THREE.BufferGeometry();
-    const particleCount = 100;
-    const posArray = new Float32Array(particleCount * 3);
-    
-    for(let i = 0; i < particleCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 5;
-    }
-    
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    
-    const particleMaterial = new THREE.PointsMaterial({
-      size: 0.005,
-      color: 0xffd700,
-      transparent: true,
-      opacity: 0.8,
-    });
-    
-    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-    particles.add(particleSystem);
-    camera.position.z = 5;
-    
-    const animate = () => {
-      requestAnimationFrame(animate);
-      particleSystem.rotation.x += 0.001;
-      particleSystem.rotation.y += 0.001;
-      renderer.render(particles, camera);
-    };
-    
-    animate();
-    
-    return () => {
-      particlesRef.current?.removeChild(renderer.domElement);
-    };
-  }, []);
-
-  // Initialize canvas
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
     const canvas = canvasRef.current;
-    canvas.width = window.innerWidth * 2;
-    canvas.height = window.innerHeight * 2;
+    if (!canvas) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
     
     const context = canvas.getContext('2d');
-    context.scale(2, 2);
+    context.scale(dpr, dpr);
     context.lineCap = 'round';
     context.strokeStyle = '#1a237e';
     context.lineWidth = 2;
     contextRef.current = context;
 
-    // Handle resize
     const handleResize = () => {
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      canvas.width = window.innerWidth * 2;
-      canvas.height = window.innerHeight * 2;
-      context.scale(2, 2);
+      const newRect = canvas.getBoundingClientRect();
+      
+      canvas.width = newRect.width * dpr;
+      canvas.height = newRect.height * dpr;
+      
+      context.scale(dpr, dpr);
       context.lineCap = 'round';
       context.strokeStyle = currentTool === 'pen' ? '#1a237e' : '#ffffff';
       context.lineWidth = currentTool === 'pen' ? 2 : 20;
@@ -108,15 +61,12 @@ const DiaryEntryPage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [currentTool]);
 
-  // Custom cursor movement
+  // Handle cursor movement
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
     const handleMouseMove = (e) => {
       if (cursorRef.current) {
         const x = e.clientX;
         const y = e.clientY;
-        cursorRef.current.style.transform = `translate(${x}px, ${y}px)`;
         setMousePosition({ x, y });
       }
     };
@@ -125,56 +75,77 @@ const DiaryEntryPage = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Rest of the component code remains the same...
-  const startDrawing = ({ nativeEvent }) => {
-    const { offsetX, offsetY } = nativeEvent;
-    const context = contextRef.current;
-    context.beginPath();
-    context.moveTo(offsetX, offsetY);
-    context.strokeStyle = currentTool === 'pen' ? '#1a237e' : '#ffffff';
-    context.lineWidth = currentTool === 'pen' ? 2 : 20;
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    contextRef.current.beginPath();
+    contextRef.current.moveTo(x, y);
+    contextRef.current.strokeStyle = currentTool === 'pen' ? '#1a237e' : '#ffffff';
+    contextRef.current.lineWidth = currentTool === 'pen' ? 2 : 20;
     setIsDrawing(true);
     if (!hasDrawn) setHasDrawn(true);
   };
 
+  const draw = (e) => {
+    if (!isDrawing || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    contextRef.current.lineTo(x, y);
+    contextRef.current.stroke();
+  };
+
   const finishDrawing = () => {
+    if (!isDrawing) return;
     contextRef.current.closePath();
     setIsDrawing(false);
     if (hasDrawn) {
-      setTimeout(() => setShowButton(true), 1000);
+      setShowButton(true);
     }
-  };
-
-  const draw = ({ nativeEvent }) => {
-    if (!isDrawing) return;
-    const { offsetX, offsetY } = nativeEvent;
-    contextRef.current.lineTo(offsetX, offsetY);
-    contextRef.current.stroke();
   };
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const context = contextRef.current;
+    if (!canvas || !context) return;
+    
     context.clearRect(0, 0, canvas.width, canvas.height);
     setHasDrawn(false);
     setShowButton(false);
   };
-
-  const handleEnterClick = () => {
-    window.location.href = '/home';
-  };
-
+  const CursorIcon = () => (
+    <svg 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      style={{ transform: 'rotate(-45deg)' }}
+    >
+      <path d="M12 19l7-7 3 3-7 7-3-3z" />
+      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+      <path d="M2 2l7.586 7.586" />
+      <path d="M11 11l5 5" />
+    </svg>
+  );
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 overflow-hidden">
-      {/* Particles container */}
-      <div ref={particlesRef} className="fixed inset-0 pointer-events-none" />
-      
       {/* Tools Panel */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm 
-                   rounded-full shadow-lg p-2 flex flex-col gap-2"
+                   rounded-full shadow-lg p-2 flex flex-col gap-2 z-10"
       >
         <motion.button
           whileHover={{ scale: 1.1 }}
@@ -186,7 +157,7 @@ const DiaryEntryPage = () => {
               : 'hover:bg-gray-100 text-gray-600'
           }`}
         >
-          <Pencil className="w-6 h-6" />
+          <Pen className="w-6 h-6" />
         </motion.button>
         
         <motion.button
@@ -213,28 +184,27 @@ const DiaryEntryPage = () => {
       </motion.div>
       
       {/* Custom Cursor */}
-      <div 
-        ref={cursorRef} 
-        className="fixed top-0 left-0 pointer-events-none z-50 mix-blend-difference"
-        style={{ transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)` }}
-      >
-        <motion.div 
-          className={`rounded-full bg-white ${currentTool === 'pen' ? 'w-6 h-6' : 'w-10 h-10'}`}
-          animate={{
-            scale: isDrawing ? 0.5 : 1,
-            opacity: isDrawing ? 1 : 0.6
-          }}
-          transition={{ duration: 0.15 }}
-        />
-      </div>
+        <div 
+          ref={cursorRef} 
+          className="fixed top-0 left-0 pointer-events-none z-50 mix-blend-difference"
+          style={{ transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) rotate(180deg)` }}
+        >
+          <motion.div 
+            className={`rounded-full flex items-center justify-center text-white 
+          ${currentTool === 'pen' ? 'w-8 h-8' : 'w-10 h-10 bg-white'}`}
+            animate={{
+          scale: isDrawing ? 0.8 : 1,
+          opacity: isDrawing ? 1 : 0.6
+            }}
+            transition={{ duration: 0.15 }}
+          >
+            {currentTool === 'pen' && <Pencil className = "rotate-180" />}
+          </motion.div>
+        </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="w-full h-full flex items-center justify-center p-4"
-      >
-        <div className="w-full h-full max-w-7xl relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Decorative elements */}
+        <div className="w-full h-full flex items-center justify-center p-4">
+          <div className="w-full h-full max-w-7xl relative bg-white rounded-2xl shadow-2xl overflow-hidden">
+            {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-full h-12 bg-gradient-to-r from-indigo-500/10 to-purple-500/10" />
           <div className="absolute bottom-0 right-0 w-full h-12 bg-gradient-to-l from-indigo-500/10 to-purple-500/10" />
           
@@ -271,26 +241,7 @@ const DiaryEntryPage = () => {
             </motion.div>
           )}
         </div>
-      </motion.div>
-
-      {/* Enter Button */}
-      <motion.div
-        className="fixed bottom-8 left-1/2 transform -translate-x-1/2"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: showButton ? 1 : 0, y: showButton ? 0 : 20 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.button
-          onClick={handleEnterClick}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-12 py-4 
-                     rounded-full font-medium shadow-lg hover:shadow-xl transition-all 
-                     duration-200 cursor-none"
-        >
-          Enter
-        </motion.button>
-      </motion.div>
+      </div>
     </div>
   );
 };
