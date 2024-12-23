@@ -12,7 +12,7 @@ import ScrollWave from "@/components/SVG";
 import DiaryEntryPage from "@/components/EntryPage";
 import { motion } from 'framer-motion';
 
-const home = () => {
+const Homecomp = () => {
     const [isLoading, setIsLoading] = useState(true);
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
@@ -176,4 +176,4 @@ const home = () => {
   )
 }
 
-export default home
+export default Homecomp
