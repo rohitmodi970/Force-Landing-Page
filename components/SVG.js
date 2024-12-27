@@ -135,7 +135,6 @@ const ScrollWave = () => {
 
   const waveColors = [
     "#ffffff",
-    "#ffffff",
     "#ff5733",
     "#33c9ff",
     "#9b59b6",
