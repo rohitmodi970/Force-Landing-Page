@@ -157,6 +157,7 @@ const GalleryComponent = () => {
         <h2 className="text-center text-xl font-semibold">Flying Posters</h2>
         <div style={{ height: '600px', position: 'relative' }}>
           {/* <FlyingPosters items={items1} /> */}
+          <FlyingPosters items={items1} />
         </div>
       </section>
     </div>
