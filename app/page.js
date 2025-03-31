@@ -1,8 +1,12 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import DiaryEntryPage from "@/components/EntryPage";
+import BlurText from '@/components/ui/BlurText';
 
+// const handleAnimationComplete = () => {
+//   console.log('Animation completed!');
+// };
 export default function Home() {
   const router = useRouter();
   const [showVideo, setShowVideo] = useState(false);
@@ -12,17 +16,17 @@ export default function Home() {
     setShowVideo(true);
   };
 
-  const handleVideoEnd = () => {
-    // Navigate to /home after the video ends
+  useEffect(() => {
+    // Redirect to /home when the component mounts
     router.push('/home');
-  };
+  }, []);
 
   return (
     <div className="relative flex items-center justify-center h-screen">
-      {!showVideo ? (
+      
         <>
           {/* Initial Screen with Diary Entry Page and Enter Button */}
-          <DiaryEntryPage />
+          {/* <DiaryEntryPage /> */}
           <button
             onClick={handleEnterClick}
             className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-12 py-4 
@@ -31,17 +35,11 @@ export default function Home() {
             Enter <img className='w-10 h-10' src="/pics/pen.gif" alt="" />
           </button>
         </>
-      ) : (
-        <>
-          {/* Video Screen */}
-          <video
-            src="/loader.mp4" // Replace with the actual video path
-            autoPlay
-            onEnded={handleVideoEnd}
-            className="w-full h-full object-cover"
-          />
-        </>
-      )}
+      
+        
+    
+
+
     </div>
   );
 }

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const slides = [
   {
     title: ["For your", "real fans"],
     creator: "Creator Community",
     description: "How creators are energizing their communities, and what's coming next",
-    image: "/pics/11.png",
-    type: "image"
+    image: "/pics/suun.mp4",
+    type: "video",
+    videoUrl: "/pics/suun.mp4"
   },
   {
     title: ["Your wildest", "creative reality"],
@@ -14,7 +15,7 @@ const slides = [
     description: "Fusing her loves of music, writing, and comedy",
     image: "/pics/13.png",
     type: "video",
-    videoUrl: "/pics/01.mp4" // Replace with actual video URL
+    videoUrl: "/pics/01.mp4"
   },
   {
     title: ["Make it", "making art"],
@@ -29,7 +30,7 @@ const slides = [
     description: "Building community around hip-hop journalism",
     image: "/pics/15.png",
     type: "video",
-    videoUrl: "/pics/03.mp4" // Replace with actual video URL
+    videoUrl: "/pics/03.mp4"
   },
   {
     title: ["Speak", "volumes"],
@@ -41,8 +42,67 @@ const slides = [
 ];
 
 const MediaComponent = ({ slide, isVisible }) => {
+  const videoRef = useRef(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  useEffect(() => {
+    if (isVisible && slide.type === 'video') {
+      const video = videoRef.current;
+      if (video) {
+        video.currentTime = 0;
+        video.play()
+          .then(() => {
+            setIsVideoPlaying(true);
+            
+            // Set a timeout to stop video after 8 seconds or when it ends
+            const videoTimer = setTimeout(() => {
+              video.pause();
+              setIsVideoPlaying(false);
+            }, 8000);
+
+            // Clean up listener for video end
+            const handleVideoEnd = () => {
+              clearTimeout(videoTimer);
+              setIsVideoPlaying(false);
+            };
+
+            video.addEventListener('ended', handleVideoEnd);
+
+            return () => {
+              clearTimeout(videoTimer);
+              video.removeEventListener('ended', handleVideoEnd);
+            };
+          })
+          .catch(error => console.error("Video playback failed:", error));
+      }
+    }
+  }, [isVisible, slide]);
+
+  if (slide.type === 'video') {
+    return (
+      <div 
+        className={`absolute inset-0 transition-opacity duration-700 ${
+          isVisible ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <video
+          ref={videoRef}
+          src={slide.videoUrl}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ 
+            objectFit: 'cover', 
+            filter: 'brightness(0.6)',
+            aspectRatio: '9/16' // 9:16 ratio
+          }}
+          muted
+          playsInline
+        />
+      </div>
+    );
+  }
+
   return (
-    <div
+    <div 
       className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
@@ -63,12 +123,10 @@ export default function HeroSection() {
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3000);
+    }, 8000); // Changed to 8000ms to match video duration
 
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
-
- 
 
   return (
     <div className="relative h-screen bg-black text-white overflow-hidden">
@@ -111,7 +169,7 @@ export default function HeroSection() {
       {/* Scroll Down Arrow */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <svg
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="http://www.w3.org/6000/svg"
           viewBox="0 0 78 77"
           className="w-8 h-8"
         >

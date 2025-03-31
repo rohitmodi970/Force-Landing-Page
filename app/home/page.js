@@ -11,7 +11,8 @@ import ModelViewer from "@/components/ModelViewer";
 import ScrollWave from "@/components/SVG";
 import DiaryEntryPage from "@/components/EntryPage";
 import { motion } from 'framer-motion';
-
+import BlurText from "@/components/ui/BlurText";
+import GalleryComponent from "@/components/Gallery";
 const Homecomp = () => {
     const [isLoading, setIsLoading] = useState(true);
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -26,7 +27,9 @@ const Homecomp = () => {
       return () => clearTimeout(timer);
     }
   }, [iframeLoaded]);
-
+  const handleAnimationComplete = () => {
+    console.log('Animation completed!');
+  };
   // Hook to track mouse position
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -89,6 +92,10 @@ const Homecomp = () => {
     
     <div className={`bg-white min-h-screen max-w-screen `}>
       <Navbar />
+      <div className="flex justify-center items-center">
+
+     
+      </div>
       <HeroSection />
       <div className="min-h-[100vh] relative flex flex-col bg-gradient-to-b mt-10 from-white/50 to-white justify-center items-center">
         <motion.div
@@ -139,6 +146,7 @@ const Homecomp = () => {
         </p>
       </div>
       <ScrollWave />
+      <GalleryComponent/>
       <MainContent />
       <Marquee />
       <div className="relative min-h-screen">
@@ -172,6 +180,7 @@ const Homecomp = () => {
     >
       ↑
     </button>
+   
   </>
   )
 }
