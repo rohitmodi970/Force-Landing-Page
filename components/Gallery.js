@@ -152,7 +152,6 @@ const GalleryComponent = () => {
         <h2 className="text-center text-xl font-semibold">Gallery Carousel</h2>
         <GalleryCarausel />
       </section>
-      {/* Gallery Carousel Section */}
       <section className="my-8">
         <h2 className="text-center text-xl font-semibold">Flying Posters</h2>
         <div style={{ height: '600px', position: 'relative' }}>

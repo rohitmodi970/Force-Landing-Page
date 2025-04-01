@@ -177,6 +177,15 @@ class Media {
     this.onResize();
   }
 
+  destroy() {
+    if (this.plane) {
+      this.plane.setParent(null);
+      this.program.destroy();
+      const texture = this.program.uniforms.tMap.value;
+      if (texture) texture.destroy();
+    }
+  }
+
   createShader() {
     const texture = new Texture(this.gl, {
       generateMipmaps: false,
@@ -206,11 +215,18 @@ class Media {
     img.crossOrigin = "anonymous";
     img.src = this.image;
     img.onload = () => {
-      texture.image = img;
-      this.program.uniforms.uImageSize.value = [
-        img.naturalWidth,
-        img.naturalHeight,
-      ];
+      const targetWidth = this.planeWidth * window.devicePixelRatio;
+      const targetHeight = this.planeHeight * window.devicePixelRatio;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+      
+      texture.image = canvas;
+      this.program.uniforms.uImageSize.value = [targetWidth, targetHeight];
     };
   }
 
@@ -323,6 +339,33 @@ class Canvas {
     this.createPreloader();
   }
 
+  destroy() {
+    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("wheel", this.onWheel);
+    window.removeEventListener("mousewheel", this.onWheel);
+
+    window.removeEventListener("mousedown", this.onTouchDown);
+    window.removeEventListener("mousemove", this.onTouchMove);
+    window.removeEventListener("mouseup", this.onTouchUp);
+
+    window.removeEventListener("touchstart", this.onTouchDown);
+    window.removeEventListener("touchmove", this.onTouchMove);
+    window.removeEventListener("touchend", this.onTouchUp);
+
+    if (this.medias) {
+      this.medias.forEach(media => media.destroy());
+      this.medias = null;
+    }
+
+    if (this.planeGeometry) {
+      this.planeGeometry.destroy();
+      this.planeGeometry = null;
+    }
+
+    this.renderer.destroy();
+    this.gl = null;
+  }
+
   createRenderer() {
     this.renderer = new Renderer({
       canvas: this.canvas,
@@ -346,7 +389,7 @@ class Canvas {
   createGeometry() {
     this.planeGeometry = new Plane(this.gl, {
       heightSegments: 1,
-      widthSegments: 100,
+      widthSegments: 20,
     });
   }
 
