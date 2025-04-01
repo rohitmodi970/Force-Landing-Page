@@ -9,6 +9,8 @@ import {
   Texture,
 } from "ogl";
 
+import './FlyingPosters.css';
+
 const vertexShader = `
 precision highp float;
 
@@ -175,6 +177,15 @@ class Media {
     this.onResize();
   }
 
+  destroy() {
+    if (this.plane) {
+      this.plane.setParent(null);
+      this.program.destroy();
+      const texture = this.program.uniforms.tMap.value;
+      if (texture) texture.destroy();
+    }
+  }
+
   createShader() {
     const texture = new Texture(this.gl, {
       generateMipmaps: false,
@@ -204,13 +215,18 @@ class Media {
     img.crossOrigin = "anonymous";
     img.src = this.image;
     img.onload = () => {
-      texture.image = img;
-      if (this.program && this.program.uniforms) {
-        this.program.uniforms.uImageSize.value = [
-          img.naturalWidth,
-          img.naturalHeight,
-        ];
-      }
+      const targetWidth = this.planeWidth * window.devicePixelRatio;
+      const targetHeight = this.planeHeight * window.devicePixelRatio;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+      
+      texture.image = canvas;
+      this.program.uniforms.uImageSize.value = [targetWidth, targetHeight];
     };
   }
 
@@ -223,32 +239,26 @@ class Media {
   }
 
   setScale() {
-    if (!this.plane || !this.viewport || !this.screen) return;
-    
     this.plane.scale.x =
       (this.viewport.width * this.planeWidth) / this.screen.width;
     this.plane.scale.y =
       (this.viewport.height * this.planeHeight) / this.screen.height;
 
     this.plane.position.x = 0;
-    if (this.plane.program && this.plane.program.uniforms) {
-      this.plane.program.uniforms.uPlaneSize.value = [
-        this.plane.scale.x,
-        this.plane.scale.y,
-      ];
-    }
+    this.plane.program.uniforms.uPlaneSize.value = [
+      this.plane.scale.x,
+      this.plane.scale.y,
+    ];
   }
 
   onResize({ screen, viewport } = {}) {
     if (screen) this.screen = screen;
     if (viewport) {
       this.viewport = viewport;
-      if (this.plane && this.plane.program && this.plane.program.uniforms) {
-        this.plane.program.uniforms.uViewportSize.value = [
-          this.viewport.width,
-          this.viewport.height,
-        ];
-      }
+      this.plane.program.uniforms.uViewportSize.value = [
+        this.viewport.width,
+        this.viewport.height,
+      ];
     }
     this.setScale();
 
@@ -260,8 +270,6 @@ class Media {
   }
 
   update(scroll) {
-    if (!this.plane || !this.viewport || !this.program) return;
-    
     this.plane.position.y = this.y - scroll.current - this.extra;
 
     const position = map(
@@ -304,7 +312,7 @@ class Canvas {
   }) {
     this.container = container;
     this.canvas = canvas;
-    this.items = items || [];
+    this.items = items;
     this.planeWidth = planeWidth;
     this.planeHeight = planeHeight;
     this.distortion = distortion;
@@ -316,8 +324,6 @@ class Canvas {
     };
     this.cameraFov = cameraFov;
     this.cameraZ = cameraZ;
-    this.isInitialized = false;
-    this.medias = null;
 
     AutoBind(this);
 
@@ -327,40 +333,50 @@ class Canvas {
     this.onResize();
 
     this.createGeometry();
-    
-    // Only create medias if we have items
-    if (this.items && this.items.length > 0) {
-      this.createMedias();
-    }
-    
-    this.isInitialized = true;
+    this.createMedias();
     this.update();
     this.addEventListeners();
-    
-    if (this.items && this.items.length > 0) {
-      this.createPreloader();
+    this.createPreloader();
+  }
+
+  destroy() {
+    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("wheel", this.onWheel);
+    window.removeEventListener("mousewheel", this.onWheel);
+
+    window.removeEventListener("mousedown", this.onTouchDown);
+    window.removeEventListener("mousemove", this.onTouchMove);
+    window.removeEventListener("mouseup", this.onTouchUp);
+
+    window.removeEventListener("touchstart", this.onTouchDown);
+    window.removeEventListener("touchmove", this.onTouchMove);
+    window.removeEventListener("touchend", this.onTouchUp);
+
+    if (this.medias) {
+      this.medias.forEach(media => media.destroy());
+      this.medias = null;
     }
+
+    if (this.planeGeometry) {
+      this.planeGeometry.destroy();
+      this.planeGeometry = null;
+    }
+
+    this.renderer.destroy();
+    this.gl = null;
   }
 
   createRenderer() {
-    try {
-      this.renderer = new Renderer({
-        canvas: this.canvas,
-        alpha: true,
-        antialias: true,
-        dpr: Math.min(window.devicePixelRatio, 2),
-      });
-      this.gl = this.renderer.gl;
-    } catch (error) {
-      console.error("Error creating renderer:", error);
-      this.renderer = null;
-      this.gl = null;
-    }
+    this.renderer = new Renderer({
+      canvas: this.canvas,
+      alpha: true,
+      antialias: true,
+      dpr: Math.min(window.devicePixelRatio, 2),
+    });
+    this.gl = this.renderer.gl;
   }
 
   createCamera() {
-    if (!this.gl) return;
-    
     this.camera = new Camera(this.gl);
     this.camera.fov = this.cameraFov;
     this.camera.position.z = this.cameraZ;
@@ -371,109 +387,71 @@ class Canvas {
   }
 
   createGeometry() {
-    if (!this.gl) return;
-    
-    try {
-      this.planeGeometry = new Plane(this.gl, {
-        heightSegments: 1,
-        widthSegments: 100,
-      });
-    } catch (error) {
-      console.error("Error creating geometry:", error);
-      this.planeGeometry = null;
-    }
+    this.planeGeometry = new Plane(this.gl, {
+      heightSegments: 1,
+      widthSegments: 20,
+    });
   }
 
   createMedias() {
-    if (!this.gl || !this.planeGeometry || !this.items || this.items.length === 0) {
-      this.medias = [];
-      return;
-    }
-    
-    try {
-      this.medias = this.items.map((image, index) => {
-        return new Media({
-          gl: this.gl,
-          geometry: this.planeGeometry,
-          scene: this.scene,
-          screen: this.screen,
-          viewport: this.viewport,
-          image,
-          length: this.items.length,
-          index,
-          planeWidth: this.planeWidth,
-          planeHeight: this.planeHeight,
-          distortion: this.distortion,
-        });
+    this.medias = this.items.map((image, index) => {
+      return new Media({
+        gl: this.gl,
+        geometry: this.planeGeometry,
+        scene: this.scene,
+        screen: this.screen,
+        viewport: this.viewport,
+        image,
+        length: this.items.length,
+        index,
+        planeWidth: this.planeWidth,
+        planeHeight: this.planeHeight,
+        distortion: this.distortion,
       });
-    } catch (error) {
-      console.error("Error creating media items:", error);
-      this.medias = [];
-    }
+    });
   }
 
   createPreloader() {
     this.loaded = 0;
-    if (!this.items || !this.items.length) return;
+    if (!this.items.length) return;
 
     this.items.forEach((src) => {
-      if (!src) return;
-      
       const image = new Image();
       image.crossOrigin = "anonymous";
       image.src = src;
       image.onload = () => {
         this.loaded += 1;
         if (this.loaded === this.items.length) {
-          if (document && document.documentElement) {
-            document.documentElement.classList.remove("loading");
-            document.documentElement.classList.add("loaded");
-          }
+          document.documentElement.classList.remove("loading");
+          document.documentElement.classList.add("loaded");
         }
-      };
-      image.onerror = (err) => {
-        console.error("Error loading image:", src, err);
-        this.loaded += 1; // Count error as loaded to prevent hanging
       };
     });
   }
 
   onResize() {
-    if (!this.container || !this.renderer || !this.camera || !this.gl) return;
-    
-    try {
-      const rect = this.container.getBoundingClientRect();
-      this.screen = {
-        width: rect.width,
-        height: rect.height,
-      };
+    const rect = this.container.getBoundingClientRect();
+    this.screen = {
+      width: rect.width,
+      height: rect.height,
+    };
 
-      if (rect.width === 0 || rect.height === 0) {
-        // Container not visible yet, try again later
-        return;
-      }
+    this.renderer.setSize(this.screen.width, this.screen.height);
 
-      this.renderer.setSize(this.screen.width, this.screen.height);
+    this.camera.perspective({
+      aspect: this.gl.canvas.width / this.gl.canvas.height,
+    });
 
-      this.camera.perspective({
-        aspect: this.gl.canvas.width / this.gl.canvas.height,
-      });
+    const fov = (this.camera.fov * Math.PI) / 180;
+    const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
+    const width = height * this.camera.aspect;
 
-      const fov = (this.camera.fov * Math.PI) / 180;
-      const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
-      const width = height * this.camera.aspect;
+    this.viewport = { height, width };
 
-      this.viewport = { height, width };
-
-      if (this.medias && this.medias.length > 0) {
-        this.medias.forEach((media) => {
-          if (media && typeof media.onResize === 'function') {
-            media.onResize({ screen: this.screen, viewport: this.viewport });
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error during resize:", error);
+    if (this.medias) {
+      this.medias.forEach((media) =>
+        media.onResize({ screen: this.screen, viewport: this.viewport })
+      );
     }
   }
 
@@ -500,91 +478,46 @@ class Canvas {
   }
 
   update() {
-    if (!this.isInitialized || !this.renderer || !this.scene || !this.camera) {
-      requestAnimationFrame(this.update);
-      return;
-    }
-    
-    try {
-      this.scroll.current = lerp(
-        this.scroll.current,
-        this.scroll.target,
-        this.scroll.ease
-      );
+    this.scroll.current = lerp(
+      this.scroll.current,
+      this.scroll.target,
+      this.scroll.ease
+    );
 
-      if (this.medias && this.medias.length > 0) {
-        this.medias.forEach((media) => {
-          if (media && typeof media.update === 'function') {
-            media.update(this.scroll);
-          }
-        });
-      }
-      
-      this.renderer.render({ scene: this.scene, camera: this.camera });
-      this.scroll.last = this.scroll.current;
-    } catch (error) {
-      console.error("Error during render loop:", error);
+    if (this.medias) {
+      this.medias.forEach((media) => media.update(this.scroll));
     }
-    
+    this.renderer.render({ scene: this.scene, camera: this.camera });
+    this.scroll.last = this.scroll.current;
     requestAnimationFrame(this.update);
   }
 
   addEventListeners() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener("resize", this.onResize);
-      window.addEventListener("wheel", this.onWheel, { passive: true });
-      window.addEventListener("mousewheel", this.onWheel, { passive: true });
+    window.addEventListener("resize", this.onResize);
+    window.addEventListener("wheel", this.onWheel);
+    window.addEventListener("mousewheel", this.onWheel);
 
-      window.addEventListener("mousedown", this.onTouchDown);
-      window.addEventListener("mousemove", this.onTouchMove);
-      window.addEventListener("mouseup", this.onTouchUp);
+    window.addEventListener("mousedown", this.onTouchDown);
+    window.addEventListener("mousemove", this.onTouchMove);
+    window.addEventListener("mouseup", this.onTouchUp);
 
-      window.addEventListener("touchstart", this.onTouchDown, { passive: true });
-      window.addEventListener("touchmove", this.onTouchMove, { passive: true });
-      window.addEventListener("touchend", this.onTouchUp);
-    }
+    window.addEventListener("touchstart", this.onTouchDown);
+    window.addEventListener("touchmove", this.onTouchMove);
+    window.addEventListener("touchend", this.onTouchUp);
   }
 
   destroy() {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener("resize", this.onResize);
-      window.removeEventListener("wheel", this.onWheel);
-      window.removeEventListener("mousewheel", this.onWheel);
+    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("wheel", this.onWheel);
+    window.removeEventListener("mousewheel", this.onWheel);
 
-      window.removeEventListener("mousedown", this.onTouchDown);
-      window.removeEventListener("mousemove", this.onTouchMove);
-      window.removeEventListener("mouseup", this.onTouchUp);
+    window.removeEventListener("mousedown", this.onTouchDown);
+    window.removeEventListener("mousemove", this.onTouchMove);
+    window.removeEventListener("mouseup", this.onTouchUp);
 
-      window.removeEventListener("touchstart", this.onTouchDown);
-      window.removeEventListener("touchmove", this.onTouchMove);
-      window.removeEventListener("touchend", this.onTouchUp);
-    }
-    
-    // Clean up WebGL resources
-    if (this.medias) {
-      this.medias.forEach(media => {
-        if (media && media.plane) {
-          media.plane.geometry?.remove?.();
-          media.plane.program?.remove?.();
-          media.plane = null;
-        }
-      });
-      this.medias = null;
-    }
-    
-    if (this.planeGeometry) {
-      this.planeGeometry.remove?.();
-      this.planeGeometry = null;
-    }
-    
-    if (this.renderer) {
-      this.renderer.destroy?.();
-      this.renderer = null;
-    }
-    
-    this.gl = null;
-    this.camera = null;
-    this.scene = null;
+    window.removeEventListener("touchstart", this.onTouchDown);
+    window.removeEventListener("touchmove", this.onTouchMove);
+    window.removeEventListener("touchend", this.onTouchUp);
   }
 }
 
@@ -593,7 +526,7 @@ export default function FlyingPosters({
   planeWidth = 320,
   planeHeight = 320,
   distortion = 3,
-  scrollEase = 0.1,
+  scrollEase = 0.01,
   cameraFov = 45,
   cameraZ = 20,
   className,
@@ -605,27 +538,18 @@ export default function FlyingPosters({
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
-    
-    try {
-      // Check if there are any items before initializing
-      if (!items || items.length === 0) {
-        console.warn("FlyingPosters: No items provided");
-      }
-      
-      instanceRef.current = new Canvas({
-        container: containerRef.current,
-        canvas: canvasRef.current,
-        items,
-        planeWidth,
-        planeHeight,
-        distortion,
-        scrollEase,
-        cameraFov,
-        cameraZ,
-      });
-    } catch (error) {
-      console.error("Error initializing Canvas:", error);
-    }
+
+    instanceRef.current = new Canvas({
+      container: containerRef.current,
+      canvas: canvasRef.current,
+      items,
+      planeWidth,
+      planeHeight,
+      distortion,
+      scrollEase,
+      cameraFov,
+      cameraZ,
+    });
 
     return () => {
       if (instanceRef.current) {
@@ -635,42 +559,20 @@ export default function FlyingPosters({
     };
   }, [items, planeWidth, planeHeight, distortion, scrollEase, cameraFov, cameraZ]);
 
-  // Handle resize when container size changes
-  useEffect(() => {
-    if (!instanceRef.current) return;
-    
-    const resizeObserver = new ResizeObserver(() => {
-      if (instanceRef.current) {
-        instanceRef.current.onResize();
-      }
-    });
-    
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-    
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  // Prevent default scroll behavior within canvas
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const canvasEl = canvasRef.current;
 
     const handleWheel = (e) => {
+      e.preventDefault();
       if (instanceRef.current) {
-        e.preventDefault();
         instanceRef.current.onWheel(e);
       }
     };
 
     const handleTouchMove = (e) => {
-      if (instanceRef.current && instanceRef.current.isDown) {
-        e.preventDefault(); // Prevents touch-based scrolling
-      }
+      e.preventDefault();
     };
 
     canvasEl.addEventListener("wheel", handleWheel, { passive: false });
@@ -685,12 +587,12 @@ export default function FlyingPosters({
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full overflow-hidden relative z-2 ${className || ''}`}
+      className={`posters-container ${className || ''}`}
       {...props}
     >
       <canvas
         ref={canvasRef}
-        className="block w-full h-full"
+        className="posters-canvas"
       />
     </div>
   );
